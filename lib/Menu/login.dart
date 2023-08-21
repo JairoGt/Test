@@ -35,7 +35,7 @@ class _LoginState extends State<Login> {
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: (){
-                //TODO: aqui redibujamos el widget y acciona la accion del boton para que vaya aumentando el numero
+                //saqui redibujamos el widget y acciona la accion del boton para que vaya aumentando el numero
                 setState(() {
                   clickCounter ++;
                 });
