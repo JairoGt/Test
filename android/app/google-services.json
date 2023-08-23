@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1097242350126",
+    "project_id": "apprastreogt",
+    "storage_bucket": "apprastreogt.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1097242350126:android:15ed4c638238488705c5bf",
+        "android_client_info": {
+          "package_name": "com.example.appseguimiento"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1097242350126-r49bsbciu098f00c6nasgfeiguu7imcf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0E_HuShmvPAeynPlczVt1zscSgTzrhek"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1097242350126-r49bsbciu098f00c6nasgfeiguu7imcf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
