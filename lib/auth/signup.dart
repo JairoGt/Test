@@ -22,6 +22,7 @@ class _SignUpState extends State<SignUp> {
 
  registration() async {
 try {
+// ignore: unused_local_variable
 UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
 email: mailcontroller.text,
 password: passwordcontroller.text,

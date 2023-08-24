@@ -1,3 +1,4 @@
+import 'package:appseguimiento/Pages/role_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -19,7 +20,7 @@ class AdminScreen extends StatelessWidget {
    final greeting = getGreeting();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return  Scaffold(
       appBar: AppBar(
          centerTitle: true,
          title: Text(greeting, style: const TextStyle( fontSize: 20, fontWeight: FontWeight.bold)),
@@ -50,85 +51,102 @@ class AdminScreen extends StatelessWidget {
         
       ),
       body: Center(
-        child: Container(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Expanded(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Expanded(
+                  child: AnimatedContainer(
+                    duration: Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                    width: 200,
+                    height: 200,
+                   
                     child: ElevatedButton(
-                      child: Text('Convertir a Motorista'),
+                      child: Text('Asignar Rol'),
                       onPressed: () {
-                       showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: Text('Proximamente'),
-              content: Text('Esperalo'),
-              actions: <Widget>[
-                ElevatedButton(
-                  child: Text('OK'),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
-            ),
-          );
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => RolePage(),
+                          ),
+                        );
                       },
                     ),
                   ),
-                  Expanded(
+                ),
+                Expanded(
+                  child: AnimatedContainer(
+                    duration: Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                    width: 200,
+                    height: 200,
+                   
                     child: ElevatedButton(
                       child: Text('Generar Pedido'),
                       onPressed: () {
-                       showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: Text('Proximamente'),
-              content: Text('Esperalo'),
-              actions: <Widget>[
-                ElevatedButton(
-                  child: Text('OK'),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
-            ),
-          );
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: Text('Proximamente'),
+                            content: Text('Esperalo'),
+                            actions: <Widget>[
+                              ElevatedButton(
+                                child: Text('OK'),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
+                            ],
+                          ),
+                        );
                       },
                     ),
                   ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Expanded(
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Expanded(
+                  child: AnimatedContainer(
+                    duration: Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                    width: 200,
+                    height: 200,
+                  
                     child: ElevatedButton(
                       child: Text('Listado de pedidos'),
                       onPressed: () {
-                       showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: Text('Proximamente'),
-              content: Text('Esperalo'),
-              actions: <Widget>[
-                ElevatedButton(
-                  child: Text('OK'),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
-            ),
-          );
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: Text('Proximamente'),
+                            content: Text('Esperalo'),
+                            actions: <Widget>[
+                              ElevatedButton(
+                                child: Text('OK'),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
+                            ],
+                          ),
+                        );
                       },
                     ),
                   ),
-                  Expanded(
+                ),
+                Expanded(
+                  child: AnimatedContainer(
+                    duration: Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                    width: 200,
+                    height: 200,
+                    
                     child: ElevatedButton(
                       child: Text('Button 4'),
                       onPressed: () {
@@ -136,11 +154,11 @@ class AdminScreen extends StatelessWidget {
                       },
                     ),
                   ),
-                ],
-              ),
-             
-            ],
-          ),
+                ),
+              ],
+            ),
+           
+          ],
         ),
       ),
     );
