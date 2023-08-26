@@ -1,6 +1,9 @@
+import 'package:appseguimiento/Pages/list_page.dart';
+import 'package:appseguimiento/Pages/pedidosScreen.dart';
 import 'package:appseguimiento/Pages/role_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:local_auth/local_auth.dart';
 
 String getGreeting() {
   final currentTime = DateTime.now();
@@ -15,40 +18,55 @@ String getGreeting() {
   }
 }
 
-class AdminScreen extends StatelessWidget {
-  final user = FirebaseAuth.instance.currentUser;
-   final greeting = getGreeting();
+// ignore: must_be_immutable
+class AdminScreen extends StatefulWidget {
+
+  const AdminScreen({super.key});
+
+  @override
+  State<AdminScreen> createState() => _AdminScreenState();
+}
+
+class _AdminScreenState extends State<AdminScreen> {
+final LocalAuthentication authentication = LocalAuthentication();
+
+  final bool _useFingerprint = false;
+final user = FirebaseAuth.instance.currentUser;
+
+  final greeting = getGreeting();
+  
+
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    
+    return Scaffold(
       appBar: AppBar(
-         centerTitle: true,
-         title: Text(greeting, style: const TextStyle( fontSize: 20, fontWeight: FontWeight.bold)),
+        centerTitle: true,
+        title: Text(greeting,
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
         flexibleSpace: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-          padding: const EdgeInsets.only(top: 0.0),
-          child: Text(
-            '${user!.email}'
-            ,
-            style: const TextStyle(fontSize: 16,color: Colors.grey),
-          ),
+                padding: const EdgeInsets.only(top: 0.0),
+                child: Text(
+                  '${user!.email}',
+                  style: const TextStyle(fontSize: 16, color: Colors.grey),
+                ),
               ),
               // Agregar más widgets aquí
             ],
           ),
         ),
-       
-        
         actions: [
-          IconButton(onPressed: ()async{
-            await FirebaseAuth.instance.signOut();
-          }, icon: const Icon(Icons.login))
+          IconButton(
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut();
+              },
+              icon: const Icon(Icons.login))
         ],
-        
       ),
       body: Center(
         child: Column(
@@ -63,7 +81,6 @@ class AdminScreen extends StatelessWidget {
                     curve: Curves.easeInOut,
                     width: 200,
                     height: 200,
-                   
                     child: ElevatedButton(
                       child: Text('Asignar Rol'),
                       onPressed: () {
@@ -83,23 +100,13 @@ class AdminScreen extends StatelessWidget {
                     curve: Curves.easeInOut,
                     width: 200,
                     height: 200,
-                   
                     child: ElevatedButton(
                       child: Text('Generar Pedido'),
                       onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: Text('Proximamente'),
-                            content: Text('Esperalo'),
-                            actions: <Widget>[
-                              ElevatedButton(
-                                child: Text('OK'),
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                              ),
-                            ],
+                         Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CrearPedidoScreen(),
                           ),
                         );
                       },
@@ -117,23 +124,13 @@ class AdminScreen extends StatelessWidget {
                     curve: Curves.easeInOut,
                     width: 200,
                     height: 200,
-                  
                     child: ElevatedButton(
                       child: Text('Listado de pedidos'),
                       onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: Text('Proximamente'),
-                            content: Text('Esperalo'),
-                            actions: <Widget>[
-                              ElevatedButton(
-                                child: Text('OK'),
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                              ),
-                            ],
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PedidosPage(),
                           ),
                         );
                       },
@@ -146,25 +143,29 @@ class AdminScreen extends StatelessWidget {
                     curve: Curves.easeInOut,
                     width: 200,
                     height: 200,
-                    
                     child: ElevatedButton(
                       child: Text('Button 4'),
-                      onPressed: () {
-                        print('Button 4 pressed');
+                      onPressed: () async {
+                        final bool isAvailable = await authentication.canCheckBiometrics;
+if (isAvailable && _useFingerprint) {
+  final bool success = await authentication.authenticate(
+      localizedReason: 'Inicia sesión con tu huella digital');
+  if (success) {
+    // El usuario se autentica con huella digital
+  } else {
+    // La huella digital no fue reconocida
+  }
+}
                       },
                     ),
                   ),
                 ),
+              
               ],
             ),
-           
           ],
         ),
       ),
     );
-    
-    
-    
-  
   }
-  }
+}

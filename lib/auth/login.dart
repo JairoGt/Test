@@ -1,5 +1,4 @@
 // ignore_for_file: use_build_context_synchronously
-
 import 'package:appseguimiento/Pages/admin_page.dart';
 import 'package:appseguimiento/Pages/client_page.dart';
 //import 'package:appseguimiento/Pages/home_page.dart';
@@ -15,9 +14,34 @@ class Login extends StatefulWidget {
 
   @override
   State<Login> createState() => _LoginState();
+  
 }
 
-class _LoginState extends State<Login> {
+class _LoginState extends State<Login>with TickerProviderStateMixin {
+  
+late AnimationController animationController;
+late TickerProvider vsync;
+_LoginState() {
+   // vsync = this;
+   
+  }
+
+ @override
+  void initState() {
+    
+    super.initState();
+     vsync =this;
+     animationController = AnimationController(
+      duration: Duration(seconds: 1),
+      vsync: vsync,
+    );
+    
+    
+  }
+
+  
+
+  
   String email = "", password = "";
   
   final _formkey= GlobalKey<FormState>();
@@ -27,6 +51,7 @@ class _LoginState extends State<Login> {
 
   userLogin() async {
     try {
+     
       await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
           
@@ -120,7 +145,17 @@ class _LoginState extends State<Login> {
       }
     }
   }
-
+Color? _getColorTween() {
+    return ColorTween(
+      begin: Colors.deepOrange,
+      end: Colors.white,
+    ).animate(
+      CurvedAnimation(
+        parent: animationController,
+        curve: Curves.easeInExpo,
+      ),
+    ).value;
+  }
   @override
   Widget build(BuildContext context) {
     
@@ -244,47 +279,56 @@ class _LoginState extends State<Login> {
                 ),
               ),
               const SizedBox(
-                height: 30.0,
+                height: 10.0,
               ),
-             GestureDetector(
-                onTap: () {
-                  if(_formkey.currentState!.validate()){
-                    setState(() {
-                      email= useremailcontroller.text;
-                      password= userpasswordcontroller.text;
-                    });
-                  }
-                  userLogin();
               
-
-
-
-
-                },
-                child: Center(
-                  child: Container(
-                    width: 150,
-                    height: 55,
-                    padding:const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                        color: const Color(0xFFf95f3b),
-                        borderRadius: BorderRadius.circular(30)),
-                    child:const Center(
-                        child: Text(
-                      "Iniciar sesion",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20.0,
-                          fontWeight: FontWeight.bold),
-                    )),
-                  ),
-                ),
+             Center(
+               child: FilledButton.tonalIcon(
+  style: ButtonStyle(
+    backgroundColor: MaterialStateProperty.all(
+              _getColorTween(),
+              
               ),
+              minimumSize: const MaterialStatePropertyAll(Size(200,70)),
+              maximumSize: const MaterialStatePropertyAll(Size(300,100)),
+            animationDuration: Durations.long1,
+          foregroundColor: MaterialStatePropertyAll(
+            Colors.white
+          ),
+            textStyle: const MaterialStatePropertyAll(
+              TextStyle(
+                fontSize: 20,
+                color: Colors.blueGrey,
+                fontWeight: FontWeight.bold
+                
+              ),
+              
+            ),
+            
+              iconColor: MaterialStatePropertyAll(
+                Colors.white
+              )// La propiedad `initialColor` define el color del fondo del botón antes de que se presione.
+),
+  
+  label: Text('Iniciar sesion'),
+  icon: Icon(Icons.start),
+  onPressed: () {
+    if(_formkey.currentState!.validate()){
+      setState(() {
+        email= useremailcontroller.text;
+        password= userpasswordcontroller.text;
+      });
+    }
+    userLogin();
+  },
+),
+             ),
               
             
               const SizedBox(
                 height: 40.0,
               ),
+              
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -308,7 +352,8 @@ class _LoginState extends State<Login> {
                             fontWeight: FontWeight.bold),
                       ))
                 ],
-              )
+              ),
+              
             ],
           ),
         ),
@@ -317,6 +362,6 @@ class _LoginState extends State<Login> {
     );
     
   }
+
+
 }
-
-
