@@ -1,7 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:appseguimiento/Pages/admin_page.dart';
 import 'package:appseguimiento/Pages/client_page.dart';
-//import 'package:appseguimiento/Pages/home_page.dart';
 import 'package:appseguimiento/Pages/moto_page.dart';
 import 'package:appseguimiento/auth/forgotpassword.dart';
 import 'package:appseguimiento/auth/signup.dart';
@@ -39,9 +38,6 @@ _LoginState() {
     
   }
 
-  
-
-  
   String email = "", password = "";
   
   final _formkey= GlobalKey<FormState>();
@@ -237,6 +233,7 @@ Color? _getColorTween() {
                     color: const Color(0xFF4c59a5),
                     borderRadius: BorderRadius.circular(22)),
                 child: TextFormField(
+                  keyboardType: TextInputType.visiblePassword,
                      controller: userpasswordcontroller,
                   validator: (value){
                     if(value==null|| value.isEmpty){
@@ -322,7 +319,7 @@ Color? _getColorTween() {
     userLogin();
   },
 ),
-             ),
+),
               
             
               const SizedBox(

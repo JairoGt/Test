@@ -52,7 +52,7 @@ password: passwordcontroller.text,
     ));
   }
 }
-
+final FirebaseAuth auth = FirebaseAuth.instance;
 // Obtiene el documento del usuario en la colección `users` con el correo electrónico especificado.
 FirebaseFirestore firestore = FirebaseFirestore.instance;
 CollectionReference users = firestore.collection('users');
@@ -60,7 +60,9 @@ DocumentReference userDocument = users.doc(mailcontroller.text);
 Map<String, dynamic> data = {
   'name': namecontroller.text,
   'email': mailcontroller.text.trim(),
+  'idmoto': '0',
   'role': 'client',
+  
 };
 
 userDocument.set(data);

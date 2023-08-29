@@ -1,4 +1,5 @@
 import 'package:appseguimiento/auth/auth_page.dart';
+import 'package:appseguimiento/theme/app_theme.dart';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -22,11 +23,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       scaffoldMessengerKey: _scaffoldKey,
       title: 'Flutter Demo',
+      theme: AppTheme(selectedColor: 2).theme(),
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-       colorScheme: ColorScheme.fromSeed(seedColor: Colors.transparent),
-        useMaterial3: true
-      ),
+     
       home: const AuthPage(),
     );
   }
