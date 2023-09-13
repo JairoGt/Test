@@ -52,7 +52,7 @@ password: passwordcontroller.text,
     ));
   }
 }
-final FirebaseAuth auth = FirebaseAuth.instance;
+//final FirebaseAuth auth = FirebaseAuth.instance;
 // Obtiene el documento del usuario en la colección `users` con el correo electrónico especificado.
 FirebaseFirestore firestore = FirebaseFirestore.instance;
 CollectionReference users = firestore.collection('users');
@@ -116,7 +116,7 @@ if (snapshot.exists) {
                       padding: const EdgeInsets.symmetric(
                           vertical: 3.0, horizontal: 5.0),
                       decoration: BoxDecoration(
-                          color: Color(0xFF4c59a5),
+                          color: const Color(0xFF4c59a5),
                           borderRadius: BorderRadius.circular(30)),
                       child: TextFormField(
                         controller: namecontroller,
@@ -239,9 +239,9 @@ if (snapshot.exists) {
                         child: Container(
                           width: 150,
                           height: 55,
-                          padding: EdgeInsets.all(10),
+                          padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                              color: Color(0xFFf95f3b),
+                              color: const Color(0xFFf95f3b),
                               borderRadius: BorderRadius.circular(30)),
                           child:const Center(
                               child: Text(
@@ -274,7 +274,7 @@ if (snapshot.exists) {
                   GestureDetector(
                       onTap: () {
                         Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => Login()));
+                            MaterialPageRoute(builder: (context) => const Login()));
                       },
                       child:const Text(
                         " Inicia sesion",

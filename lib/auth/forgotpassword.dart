@@ -1,4 +1,6 @@
 
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:appseguimiento/auth/login.dart';
 import 'package:appseguimiento/auth/signup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -20,6 +22,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   resetPassword() async {
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text(
         "Correo Enviado, favor de revisar su buzon !",
@@ -41,7 +44,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     return Scaffold(
       backgroundColor: const Color.fromARGB(133, 60, 8, 8),
       body: Container(
-        margin: EdgeInsets.symmetric(vertical: 50.0),
+        margin: const EdgeInsets.symmetric(vertical: 50.0),
         child: Form(
           key: _formkey,
           child: Column(
@@ -107,7 +110,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                         ),
                        const SizedBox(height: 40.0),
                         Container(
-                          margin: EdgeInsets.only(left: 60.0),
+                          margin: const EdgeInsets.only(left: 60.0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
