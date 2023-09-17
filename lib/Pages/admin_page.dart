@@ -1,6 +1,7 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, avoid_print
 
 import 'package:appseguimiento/Pages/asignacion_page.dart';
+import 'package:appseguimiento/Pages/edit_pedidos.dart';
 import 'package:appseguimiento/Pages/list_page.dart';
 import 'package:appseguimiento/Pages/pedidosScreen.dart';
 import 'package:appseguimiento/Pages/role_page.dart';
@@ -39,7 +40,6 @@ class _AdminScreenState extends State<AdminScreen>
   late AnimationController _animationController;
 
   // Declare an animation for the button offsets
-  late Animation<Offset> _buttonOffsetAnimation;
 
 
   @override
@@ -53,14 +53,6 @@ class _AdminScreenState extends State<AdminScreen>
       duration: const Duration(seconds: 1),
     );
 
-    // Initialize the button offset animation with a curve and a range
-    _buttonOffsetAnimation = Tween<Offset>(
-      begin: const Offset(1.0, 1.0),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOut,
-    ));
 
     // Start the animation when the screen is loaded
     _animationController.forward();
@@ -75,6 +67,7 @@ class _AdminScreenState extends State<AdminScreen>
 
   @override
   Widget build(BuildContext context) {
+    
     final user = FirebaseAuth.instance.currentUser;
     return Scaffold(
       appBar: AppBar(
@@ -94,7 +87,7 @@ class _AdminScreenState extends State<AdminScreen>
                   style: const TextStyle(fontSize: 16, color: Colors.grey),
                 ),
               ),
-              // Agregar más widgets aquí
+              
             ],
           ),
         ),
@@ -118,132 +111,122 @@ class _AdminScreenState extends State<AdminScreen>
       ),
       
       body: WillPopScope(
+          
+        onWillPop: () async => false,
         
-  onWillPop: () async => false,
-  
-  child: Center(
-    
-    child: Column(
-      children: [
-        SizedBox(height: 100,),
-        Expanded(
-          flex: 1,
-          child: GridView.count(
-            
-            childAspectRatio: 0.9,
-            mainAxisSpacing: 30.0,
-            crossAxisSpacing: 15,
-            crossAxisCount: 2,
-            children: [
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-                width: 200,
-                height: 200,
-                child: FilledButton.tonal(
-                  child: const Text('Asignar Rol'),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const RolePage(),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-                width: 200,
-                height: 200,
-                child: FilledButton.tonal(
-                  child: const Text('Listado de Pedidos'),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const PedidosPage(),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              Align(
-                alignment: Alignment.center,
-                child: SlideTransition(
-                  position: _buttonOffsetAnimation,
-                  child: AnimatedContainer(
-                    duration:
-                        const Duration(milliseconds: 300),
-                    curve:
-                        Curves.easeInOut,
-                    width:
-                        200,
-                    height:
-                        200,
-                    child:
-                        FilledButton.tonal(
-                      child:
-                          const Text('Generar Pedido'),
-                      onPressed:
-                          () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder:
-                                (context) =>
-                                    const CrearPedidoScreen(),
-                          ),
-                        );
-                      },
-                    ),
+        child: Center(
+          
+          child: Column(
+        children: [
+          
+         const SizedBox(height: 40),
+          Expanded(
+            flex: 1,
+            child: GridView.count(
+               childAspectRatio: 0.9,
+              mainAxisSpacing: 30.0,
+              crossAxisSpacing: 15,
+              crossAxisCount: 2,
+              children: [
+                
+                
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                  width: 200,
+                  height: 200,
+                  child: ElevatedButton(
+                    child: const Text('Asignar Rol'),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const RolePage(),
+                        ),
+                      );
+                    },
                   ),
                 ),
-              ),
-              Align(
-                alignment:
-                    Alignment.topCenter,
-                child:
-                    SlideTransition(
-                  position:
-                      _buttonOffsetAnimation,
-                  child:
-                      AnimatedContainer(
-                    duration:
-                        const Duration(milliseconds: 300),
-                    curve:
-                        Curves.easeInOut,
-                    width:
-                        200,
-                    height:
-                        200,
-                    child:
-                        FilledButton.tonal(
-                      child:
-                          const Text('Asignar de Motorista'),
-                      onPressed:
-                          () {
-                            Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder:
-                                (context) =>
-                                    const AsignarPedidos(),
-                          ),
-                        );
-                          },
-                    ),
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                  width: 200,
+                  height: 200,
+                  child: ElevatedButton(
+                    child: const Text('Listado de Pedidos'),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const PedidosPage(),
+                        ),
+                      );
+                    },
                   ),
                 ),
-              ),
-            ],
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                  width: 200,
+                  height: 200,
+                  child: ElevatedButton(
+                    child: const Text('Generar Pedido'),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const CrearPedidoScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                  width: 200,
+                  height: 200,
+                  child: ElevatedButton(
+                    child: const Text('Asignar de Motorista'),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AsignarPedidos(),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                  width: 200,
+                  height: 200,
+                  child: ElevatedButton(
+                    child: const Text('Modificar Pedido'),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>  EditarPedido(),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+
+              
+              ],
+              
+            ),
           ),
+        ],
+          ),
+          
         ),
-      ],
-    ),
-  ),
-)
+      ),
+      
       );
     
   }

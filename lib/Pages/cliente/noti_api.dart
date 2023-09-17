@@ -19,18 +19,18 @@ class Firebaseapi {
 
   Future<void> initNotification(Function(RemoteMessage) onMessage) async {
     await _firebaseMessaging.requestPermission();
-    final fCMToken = await _firebaseMessaging.getToken();
-    print(fCMToken);
+    //final fCMToken = await _firebaseMessaging.getToken();
+    //print(fCMToken);
 
     FirebaseMessaging messaging = FirebaseMessaging.instance;
 
     NotificationSettings settings = await messaging.requestPermission(
       alert: true,
-      announcement: false,
+      announcement: true,
       badge: true,
-      carPlay: false,
-      criticalAlert: false,
-      provisional: false,
+      carPlay: true,
+      criticalAlert: true,
+      provisional: true,
       sound: true,
     );
 
@@ -42,7 +42,10 @@ class Firebaseapi {
 }
 
 class MyWidget extends StatefulWidget {
+  const MyWidget({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _MyWidgetState createState() => _MyWidgetState();
 }
 

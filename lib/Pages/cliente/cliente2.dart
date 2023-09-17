@@ -1,11 +1,16 @@
 // ignore_for_file: use_build_context_synchronously
 
+
+import 'package:appseguimiento/Pages/cliente/history.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+import '../MotoristaPage/moto_asignado.dart';
 
 
 class ClienteTrack extends StatefulWidget {
@@ -44,19 +49,54 @@ onStepTapped(int value){
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context)=> PedidosH()));
+        },
+        backgroundColor: Colors.green,
+        child: const Icon(Icons.motorcycle),
+      ),
       appBar: AppBar(
-      leading: IconButton(onPressed: (){
-  
-    Navigator.popAndPushNamed(context, '/cliente');
-   // Navigator.popUntil(context, ModalRoute.withName('/'));
-      }, icon: const Icon(Icons.arrow_back_ios)),
+     automaticallyImplyLeading: false,
+      
         centerTitle: true,
-        title: const Text('Consulta de pedidos'),
+        title: Text(greeting,
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+        flexibleSpace: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 0.0),
+                child: Text(
+                  '${user!.email}',
+                  style: const TextStyle(fontSize: 16, color: Colors.grey),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          IconButton(
+              onPressed: () async {
+                try {
+    await FirebaseAuth.instance.signOut();
+    
+    Navigator.popUntil(context, ModalRoute.withName('/'));
+    Navigator.popAndPushNamed(context, '/login');
+  } catch (e) {
+    print("Error al cerrar sesión: $e");
+  }
+              },
+              icon: const Icon(Icons.login),
+              color: Colors.red,
+              )
+        ],
+        
       ),
       body: SingleChildScrollView(
-        child: WillPopScope(
-          onWillPop:() async=>false ,
+          
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -87,12 +127,9 @@ onStepTapped(int value){
                   ],
                 ),
                 const SizedBox(height: 4),
-                
+                  
                     // Código para consultar el pedido y mostrar el estado
-                    // ...
-               
-                
-                ElevatedButton(
+            ElevatedButton(
                   onPressed: () async {
         
                     if (_trackingNumber.isNotEmpty) {
@@ -122,7 +159,7 @@ onStepTapped(int value){
                                 onStepTapped: onStepTapped,
                                 controlsBuilder: (BuildContext context,
                                     ControlsDetails details) {
-                                  return Row(
+                                  return const Row(
                                     children: <Widget>[
                                       
                                     ],
@@ -224,8 +261,8 @@ onStepTapped(int value){
                                       child: Text(
                                           'Pedido entregado el ${DateFormat('d/M/y').format(pedido['fechaEntrega'].toDate())}\n alas ${DateFormat('HH:mm').format(pedido['fechaEntrega'].toDate())}'),
                                     ),
-                                    content:Padding(
-                                      padding: const EdgeInsets.all(8.0),
+                                    content:const Padding(
+                                      padding: EdgeInsets.all(8.0),
                                       
                                     ),
                                   ),
@@ -297,12 +334,15 @@ onStepTapped(int value){
           onPressed: () async {
             if (_trackingNumber.isNotEmpty) {
               String? token = await FirebaseMessaging.instance.getToken();
-              // Tu código para consultar el pedido aquí...
+              
         FirebaseFirestore.instance.collection('tokens').doc(token).set({
           'token': token,
           'tema': 'pedido_$_trackingNumber',
         });
-        
+        FirebaseFirestore.instance.collection('pedidos').doc(_trackingNumber).update({
+          'idcliente': '${user!.email}',
+          
+        });
               // Registra el pedido para recibir notificaciones
               await FirebaseMessaging.instance.subscribeToTopic('pedido_$_trackingNumber');
         
@@ -365,7 +405,12 @@ onStepTapped(int value){
             ),
           ),
         ),
+      
+      bottomNavigationBar: BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        child: Container(height: 10.0),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startDocked,
     );
   }
 

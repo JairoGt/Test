@@ -1,4 +1,5 @@
-// ignore_for_file: use_key_in_widget_constructors
+// ignore_for_file: use_key_in_widget_constructors, use_build_context_synchronously
+
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -102,14 +103,14 @@ await Printing.sharePdf(bytes: bytes);
           context: context,
           builder: (context) {
             return AlertDialog(
-              title: Text('Éxito'),
-              content: Text('PDF guardado en la carpeta de Descargas'),
+              title:const Text('Éxito'),
+              content: const Text('PDF guardado en la carpeta de Descargas'),
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop(); // Cerrar el cuadro de diálogo
                   },
-                  child: Text('OK'),
+                  child:const Text('OK'),
                 ),
               ],
             );
@@ -121,14 +122,14 @@ await Printing.sharePdf(bytes: bytes);
           context: context,
           builder: (context) {
             return AlertDialog(
-              title: Text('Error'),
-              content: Text('Error al guardar el PDF'),
+              title: const Text('Error'),
+              content: const Text('Error al guardar el PDF'),
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop(); // Cerrar el cuadro de diálogo
                   },
-                  child: Text('OK'),
+                  child: const Text('OK'),
                 ),
               ],
             );
@@ -144,16 +145,25 @@ await Printing.sharePdf(bytes: bytes);
 Widget build(BuildContext context) {
   return Scaffold(
     appBar: AppBar(
+      leading: IconButton(
+        onPressed: () {
+          Navigator.popAndPushNamed(context, '/asignacion');
+          
+        },
+        icon: const Icon(Icons.arrow_back),
+      ),
+      centerTitle: true,
+      
       actions: [
         IconButton(
           onPressed: () async {
             final pedidos = await pedidosProvider.getPedidos();
             generatePDF(context, pedidos);
           },
-          icon: Icon(Icons.picture_as_pdf),
+          icon: const Icon(Icons.picture_as_pdf),
         )
       ],
-      title: Text('Pedidos'),
+      title: const Text('Pedidos'),
     ),
     body: FutureBuilder<List<DocumentSnapshot>>(
       future: pedidosProvider.getPedidos(),
@@ -213,6 +223,33 @@ Widget build(BuildContext context) {
           );
         }
       },
+    ),
+    floatingActionButton: FloatingActionButton(
+       backgroundColor: Theme.of(context).brightness == Brightness.dark
+        ? Colors.green 
+        : Colors.blueAccent, 
+      onPressed: () {
+       showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text('Ayuda'),
+                            // ignore: prefer_const_constructors
+                            content: Text(
+                                'Aqui podras ver todos los pedidos que se han realizado, puedes ver el estado de cada uno de ellos, y tambien puedes generar un PDF con todos los pedidos que se han realizado hasta el momento'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text('OK'),
+                              )
+                            ],
+                          );
+                        },
+                      );
+      },
+      child: const Icon(Icons.help_outline_sharp),
     ),
   );
 }

@@ -200,15 +200,19 @@ class _AsignarPedidosState extends State<AsignarPedidos> {
         ),
     
       bottomNavigationBar: BottomAppBar(
+        
         shape: const CircularNotchedRectangle(),
         child: Container(height: 50.0),
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+        ? Colors.green  // Si el tema es oscuro, usa texto blanco
+        : Colors.blueAccent, 
         onPressed: () async {
           //print(_idPedido);
 
           try {
-            Navigator.popAndPushNamed(context, '/asignacion');
+           
 // Mostrar un mensaje de error
             if (_idPedido == '0' || _idMotorista == '0') {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -225,17 +229,18 @@ class _AsignarPedidosState extends State<AsignarPedidos> {
                   'estadoid': 2,
                   'fechadespacho': Timestamp.fromDate(now),
                 });
+             
 
-// Cambiar el estado del pedido
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Pedido asignado'),
-                  ),
-                );
 // Navegar a otra página
                 Navigator.popAndPushNamed(context, '/listaPedidos');
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+// ignore: prefer_interpolation_to_compose_strings
+                    content: Text('Pedido Asignado'),
+                  ),
+                );
               } catch (e) {
-                Navigator.popAndPushNamed(context, '/asignacion');
+               
                 // Mostrar un mensaje de error
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
@@ -243,6 +248,7 @@ class _AsignarPedidosState extends State<AsignarPedidos> {
                     content: Text('Alerta estas dejando un campo vacio  '),
                   ),
                 );
+                 Navigator.popAndPushNamed(context, '/asignacion');
               }
             }
           } on FirebaseException {

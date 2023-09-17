@@ -21,7 +21,7 @@ void main()async {
   options: DefaultFirebaseOptions.currentPlatform,
 );
   await Firebaseapi().initNotification((message) {
-    print('Message received: ${message.notification?.body}');
+   // print('Message received: ${message.notification?.body}');
 
  _showFCMNotification(message.notification?.title ?? '', message.notification?.body ?? '');
   });
@@ -61,7 +61,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       scaffoldMessengerKey: _scaffoldKey,
       title: 'Flutter Demo',
-      theme: AppTheme(selectedColor: 2).theme(),
+      theme: AppTheme(selectedColor: 5).theme(context),
+      themeMode: ThemeMode.light,
       debugShowCheckedModeBanner: false,
       routes: {
         '/asignacion': (context) => const AsignarPedidos(),

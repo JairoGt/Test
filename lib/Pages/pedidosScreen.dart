@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, unused_element
+// ignore_for_file: file_names, unused_element, non_constant_identifier_names
 
 import 'dart:math';
 
@@ -43,7 +43,7 @@ class _CrearPedidoScreenState extends State<CrearPedidoScreen>
 
   // Declare an animation for the text field opacity
   late Animation<double> _textFieldOpacityAnimation;
-
+ //final AnimatedTransitionBuilder =0;
   // Declare a global key that uniquely identifies the Form widget
   final _formKey = GlobalKey<FormState>();
 
@@ -282,6 +282,7 @@ class _CrearPedidoScreenState extends State<CrearPedidoScreen>
       'direccion': direccion,
       'estadoid': 1,
       'idMotorista': '0',
+      'idcliente': '0',
       'idpedidos': idPedidoSJP,
       'fechaCreacion': Timestamp.fromDate(now),
       'fechadespacho': Timestamp.fromDate(now),
