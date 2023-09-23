@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:appseguimiento/Pages/MotoristaPage/moto_asignado.dart';
 import 'package:appseguimiento/Pages/admin_page.dart';
 import 'package:appseguimiento/Pages/asignacion_page.dart';
@@ -8,8 +10,8 @@ import 'package:appseguimiento/Pages/list_page.dart';
 import 'package:appseguimiento/auth/auth_page.dart';
 import 'package:appseguimiento/auth/login.dart';
 import 'package:appseguimiento/theme/app_theme.dart';
-//import 'package:firebase_messaging/firebase_messaging.dart';
-//import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+
 
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -27,8 +29,14 @@ void main()async {
   });
 
   // Display the notification directly
-   
-  
+     FlutterError.onError = (errorDetails) {
+      FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+    };
+    // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
+    PlatformDispatcher.instance.onError = (error, stack) {
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      return true;
+    };
 
   runApp(const MyApp());
 }
@@ -61,7 +69,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       scaffoldMessengerKey: _scaffoldKey,
       title: 'Flutter Demo',
-      theme: AppTheme(selectedColor: 5).theme(context),
+      theme: AppTheme(selectedColor: 7).theme(context),
       themeMode: ThemeMode.light,
       debugShowCheckedModeBanner: false,
       routes: {
@@ -71,7 +79,8 @@ class MyApp extends StatelessWidget {
         '/login' :(context) => const Login(),
         '/motoasignado' :(context) => const MotoPage(),
         '/cliente' :(context) => const ClientScreen(),
-        '/tracking':(context) => const ClienteTrack()
+        '/tracking':(context) => const ClienteTrack(),
+       
       },
       home: const AuthPage(),
     );

@@ -169,12 +169,7 @@ class _SignUpState extends State<SignUp> {
                               color: Colors.white,
                             ),
                             hintText: 'Ingresa tu correo',
-                            errorStyle: TextStyle(
-                              color: Colors.red,
-                              fontSize: 16.0,
-                              textBaseline: TextBaseline.alphabetic,
-                              fontWeight: FontWeight.bold,
-                            ),
+                           
                             hintStyle: TextStyle(color: Colors.white60),
                           ),
                           style: const TextStyle(color: Colors.white),

@@ -14,8 +14,7 @@ class PedidosProvider extends ChangeNotifier {
     // Realizamos la consulta
     final pedidos = await pedidosCollection.where('idpedidos').get();
 
-    // Devolvemos la lista de documentos
-  
+   
 
     // Notificamos a los listeners
     notifyListeners();
@@ -24,14 +23,6 @@ class PedidosProvider extends ChangeNotifier {
     return pedidos.docs;
   }
 
-  static of(BuildContext context) {}
-
-  // ...
-
-  // Lista de pedidos
-
-
-  // ...
 }
 
 

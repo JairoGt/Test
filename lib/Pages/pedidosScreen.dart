@@ -43,11 +43,10 @@ class _CrearPedidoScreenState extends State<CrearPedidoScreen>
 
   // Declare an animation for the text field opacity
   late Animation<double> _textFieldOpacityAnimation;
- //final AnimatedTransitionBuilder =0;
-  // Declare a global key that uniquely identifies the Form widget
+
   final _formKey = GlobalKey<FormState>();
 
-  // Declare a variable to store the button state
+  
   bool _isButtonEnabled = false;
 
   @override

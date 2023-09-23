@@ -26,20 +26,15 @@ class PedidosPage extends StatelessWidget {
   }
 
 
-
   Future<void> generatePDF(BuildContext context, List<DocumentSnapshot<Object?>> data) async {
-   
-   final pdf = pw.Document();
-final pedidos = await pedidosProvider.getPedidos();
-pedidos.sort(_compareFechas);
+    final pdf = pw.Document();
+    final pedidos = await pedidosProvider.getPedidos();
+    pedidos.sort(_compareFechas);
 
-
-pdf.addPage(
-    pw.Page(
-      build: (context) {
-        return pw.Column(
-          crossAxisAlignment: pw.CrossAxisAlignment.start,
-          children: [
+    pdf.addPage(
+      pw.MultiPage(
+        build: (context) {
+          return [
             pw.Container(
               child: pw.Paragraph(
                 text: '   Lista de pedidos      ',
@@ -52,40 +47,52 @@ pdf.addPage(
                 border: pw.Border.all(),
               ),
             ),
-          pw.TableHelper.fromTextArray(
-              context: context,
-              data: <List<String>>[
-                // Encabezados de la tabla
-                ['Tracking', 'Dirección', 'Estado', 'Total a pagar', 'Fecha de Pedido'],
-                // Datos de los pedidos
-                ...pedidos.map((pedido) => [
-                  pedido['idpedidos'].toString(),
-                  pedido['direccion'] ?? '',
-                  pedido['estadoid'] == 1
-                      ? '(CREADO)'
-                      : pedido['estadoid'] == 2
-                          ? '(DESPACHADO)'
-                          : pedido['estadoid'] == 3
-                              ? '(EN CAMINO)'
-                              : pedido['estadoid'] == 4
-                                  ? '(ENTREGADO)'
-                                  : '',
-                  'Q${pedido['precioTotal']}',
-                  DateFormat('d/M/y').format(pedido['fechaCreacion'].toDate()),
-                ]),
+            pw.Table(
+              columnWidths: {
+                0: pw.IntrinsicColumnWidth(),
+                1: pw.IntrinsicColumnWidth(),
+                2: pw.IntrinsicColumnWidth(),
+                3: pw.IntrinsicColumnWidth(),
+                4: pw.IntrinsicColumnWidth(),
+              },
+              children: <pw.TableRow>[
+                pw.TableRow(
+                  children: <pw.Widget>[
+                    pw.Text('Tracking'),
+                    pw.Text('Dirección'),
+                    pw.Text('Estado'),
+                    pw.Text('Total a pagar'),
+                    pw.Text('Fecha de Pedido'),
+                  ],
+                ),
+                ...pedidos.map((pedido) => pw.TableRow(
+                  children: <pw.Widget>[
+                    pw.Text(pedido['idpedidos'].toString()),
+                    pw.Text(pedido['direccion'] ?? ''),
+                    pw.Text(pedido['estadoid'] == 1
+                        ? '(CREADO)'
+                        : pedido['estadoid'] == 2
+                            ? '(DESPACHADO)'
+                            : pedido['estadoid'] == 3
+                                ? '(EN CAMINO)'
+                                : pedido['estadoid'] == 4
+                                    ? '(ENTREGADO)'
+                                    : ''),
+                    pw.Text('Q${pedido['precioTotal']}'),
+                    pw.Text(DateFormat('d/M/y').format(pedido['fechaCreacion'].toDate())),
+                  ],
+                )),
               ],
-              
             ),
-          ],
-        );
-      },
-    ),
-  );
+          ];
+        },
+      ),
+    );
 
-final bytes = await pdf.save();
+    final bytes = await pdf.save();
 
-await Printing.sharePdf(bytes: bytes);
-   
+    await Printing.sharePdf(bytes: bytes);
+
     // Obtener la ubicación de la carpeta de almacenamiento externo compartido
     final externalDir = await getExternalStorageDirectory();
 
@@ -97,20 +104,19 @@ await Printing.sharePdf(bytes: bytes);
 
       // Verificar si el archivo se ha guardado correctamente
       if (await pdfFile.exists()) {
-        
         // Mostrar un cuadro de diálogo de éxito
         showDialog(
           context: context,
           builder: (context) {
             return AlertDialog(
-              title:const Text('Éxito'),
+              title: const Text('Éxito'),
               content: const Text('PDF guardado en la carpeta de Descargas'),
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop(); // Cerrar el cuadro de diálogo
                   },
-                  child:const Text('OK'),
+                  child: const Text('OK'),
                 ),
               ],
             );
@@ -138,8 +144,8 @@ await Printing.sharePdf(bytes: bytes);
       }
     } else {
       // Manejar el caso en el que la
-}
-}
+    }
+  }
 
 @override
 Widget build(BuildContext context) {

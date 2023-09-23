@@ -17,6 +17,8 @@ exports.notificarCambioEstado = functions.firestore
     .onUpdate(async (change, context) => {
         const pedidoAnterior = change.before.data();
         const pedidoActual = change.after.data();
+        const direccion = change.after.data();
+        const direccionact = change.after.data();
 
         // Verificar si el estado del pedido ha cambiado
         if (pedidoAnterior.estadoid !== pedidoActual.estadoid) {
@@ -43,4 +45,7 @@ exports.notificarCambioEstado = functions.firestore
                 console.error(`Error al enviar la notificación para el pedido ${pedidoId}:`, error);
             }
         }
+
+        // Verificar si la direccion del pedido ha cambiado
+        
     });

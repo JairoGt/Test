@@ -1,5 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
-
+// ignore_for_file: use_build_context_synchronously, unnecessary_null_comparison
 import 'package:appseguimiento/Pages/admin_page.dart';
 import 'package:appseguimiento/Pages/client_page.dart';
 import 'package:appseguimiento/Pages/moto_page.dart';
@@ -9,6 +8,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 showLoadingDialog(BuildContext context) {
   showDialog(
@@ -19,7 +19,7 @@ showLoadingDialog(BuildContext context) {
         backgroundColor: Colors.transparent,
         elevation: 0,
         child: Center(
-          child: SpinKitSpinningCircle(
+          child: SpinKitSpinningLines(
             color: Colors.blue,
             size: 50.0,
           ),
@@ -100,7 +100,8 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
               context: context,
               builder: (context) => AlertDialog(
                 title: const Text('Unauthorized'),
-                content: const Text('You are not authorized to access the application.'),
+                content: const Text(
+                    'You are not authorized to access the application.'),
                 actions: <Widget>[
                   ElevatedButton(
                     child: const Text('OK'),
@@ -155,68 +156,117 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
     }
   }
 
-  Color? _getColorTween() {
-    return ColorTween(
-      begin: Colors.deepOrange,
-      end: Colors.white,
-    )
-        .animate(
-          CurvedAnimation(
-            parent: animationController,
-            curve: Curves.easeInExpo,
-          ),
-        )
-        .value;
-  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF141E5A),
-      body: SingleChildScrollView(
-        child: Form(
-          key: _formkey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Image.asset(
-                "images/above1.jpg",
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height / 2.9,
-                fit: BoxFit.cover,
+    Future<UserCredential?> signInWithGoogle() async {
+      // Initialize GoogleSignIn
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+
+      // Trigger the sign-in flow
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+
+      // Obtain the auth details from the request
+      final GoogleSignInAuthentication? googleAuth =
+          await googleUser?.authentication;
+
+      // Create a new credential
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth?.accessToken,
+        idToken: googleAuth?.idToken,
+      );
+
+      // Once signed in, return the UserCredential
+      UserCredential? userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+
+      if (userCredential != null) {
+         showLoadingDialog(context);
+        // Get the user's email
+        final String email = userCredential.user!.email!;
+        FirebaseFirestore firestore = FirebaseFirestore.instance;
+        CollectionReference users = firestore.collection('users');
+
+        // Get the document for the current user
+        DocumentReference userDocument = users.doc(email);
+
+        // Try to get the document for the current user
+        DocumentSnapshot snapshot = await userDocument.get();
+
+        if (snapshot.exists) {
+         
+          var role = snapshot['role'];
+          if (role == 'admin') {
+            
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const AdminScreen(),
               ),
-              const Padding(
-                padding: EdgeInsets.only(left: 20.0),
-                child: Text(
-                  "Bienvenido de\nNuevo",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 34.0,
-                      fontFamily: 'Pacifico'),
-                ),
+            );
+          } else if (role == 'moto') {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const MotoScreen(),
               ),
-              const SizedBox(
-                height: 30.0,
+            );
+          } else {
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text('Unauthorized'),
+                content: const Text(
+                    'You are not authorized to access the application.'),
+                actions: <Widget>[
+                  ElevatedButton(
+                    child: const Text('OK'),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
               ),
-              Center(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 1.0),
-                  margin: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: TextFormField(
+            );
+          }
+        } else {
+          // If the document does not exist, create it with the role of 'client'
+          userDocument.set({
+            'name': userCredential.user!.displayName,
+            'email': email,
+            'idmoto': '0',
+            'role': 'client',
+          });
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const ClientScreen(),
+            ),
+          );
+        }
+      }
+  
+      return userCredential;
+    }
+    //TextFormField para el correo electrónico
+    var textFormField = TextFormField(
                     style: TextStyle(
-    color: Theme.of(context).brightness == Brightness.dark
-        ? Colors.white  // Si el tema es oscuro, usa texto blanco
-        : Colors.white, // Si el tema es claro, usa texto negro
-  ),
-        
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors
+                              .white // Si el tema es oscuro, usa texto blanco
+                          : Colors
+                              .white, // Si el tema es claro, usa texto negro
+                    ),
                     keyboardType: TextInputType.emailAddress,
+                    textInputAction: TextInputAction.next, // Agregado
                     controller: useremailcontroller,
                     decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(18),
-                      ),
-                      labelText: 'Correo Electrónico',
-                    ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                        labelText: 'Correo Electrónico',
+                        prefixIcon: const Icon(Icons.email)),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Por favor, ingrese la dirección de correo electrónico';
@@ -236,33 +286,24 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                         _isButtonEnabled = _formkey.currentState!.validate();
                       });
                     },
+                  );
+   //TextFormField para la contraseña
+    var textFormField2 = TextFormField(
+                  style: TextStyle(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white // Si el tema es oscuro, usa texto blanco
+                        : Colors.white, // Si el tema es claro, usa texto negro
                   ),
-                ),
-              ),
-              const SizedBox(
-                height: 30.0,
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(vertical: 3.0),
-                margin: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: TextFormField(
-                   style: TextStyle(
-    color: Theme.of(context).brightness == Brightness.dark
-        ? Colors.white  // Si el tema es oscuro, usa texto blanco
-        : Colors.white, // Si el tema es claro, usa texto negro
-  ),
-                  keyboardType: TextInputType.emailAddress,
+                  keyboardType: TextInputType.visiblePassword,
                   controller: userpasswordcontroller,
                   obscureText: true,
+                  textInputAction: TextInputAction.go,
                   decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                    labelText: 'Contraseña',
-                    labelStyle: const TextStyle(
-                      
-                    ),
-                  ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                      labelText: 'Contraseña',
+                      prefixIcon: const Icon(Icons.password)),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Por favor, ingrese la contraseña';
@@ -274,7 +315,53 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                       _isButtonEnabled = _formkey.currentState!.validate();
                     });
                   },
+                );
+    
+    return Scaffold(
+      backgroundColor: const Color(0xFF141E5A),
+      body: SingleChildScrollView(
+        child: Form(
+          key: _formkey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(
+                height: 20.0,
+              ),
+              Image.asset(
+                "images/above1.jpg",
+                width: MediaQuery.of(context).size.width / 1,
+                height: MediaQuery.of(context).size.height / 5,
+                fit: BoxFit.cover,
+              ),
+              const Padding(
+                padding: EdgeInsets.only(left: 20.0),
+                child: Text(
+                  "Bienvenido de Nuevo",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20.0,
+                    fontFamily: 'Avenir',
+                  ),
                 ),
+              ),
+              const SizedBox(
+                height: 30.0,
+              ),
+              Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 1.0),
+                  margin: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: textFormField,
+                ),
+              ),
+              const SizedBox(
+                height: 30.0,
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 3.0),
+                margin: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: textFormField2,
               ),
               const SizedBox(
                 height: 15.0,
@@ -299,25 +386,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                 height: 10.0,
               ),
               Center(
-                child: FilledButton.tonalIcon(
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(
-                      _getColorTween(),
-                    ),
-                    minimumSize:  MaterialStateProperty.all(const Size(200, 70)),
-                    maximumSize:  MaterialStateProperty.all(const Size(300, 100)),
-                    animationDuration: const Duration(milliseconds: 300),
-                    foregroundColor:  MaterialStateProperty.all(Colors.white),
-                    textStyle:MaterialStateProperty.all(
-                      const TextStyle(
-                          fontSize: 20,
-                          color: Colors.blueGrey,
-                          fontWeight: FontWeight.bold),
-                    ),
-                    iconColor:  MaterialStateProperty.all(Colors.white),
-                  ),
-                  label: const Text('Iniciar sesión'),
-                  icon: const Icon(Icons.start),
+                child: ElevatedButton(
                   onPressed: () {
                     if (_isButtonEnabled) {
                       userLogin();
@@ -329,10 +398,22 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                       });
                     }
                   },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFf95f3b),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 40.0, vertical: 10.0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                  child: const Text(
+                    "Iniciar Sesión",
+                    style: TextStyle(fontSize: 20.0, color: Colors.white),
+                  ),
                 ),
               ),
               const SizedBox(
-                height: 40.0,
+                height: 20.0,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -346,8 +427,10 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => const SignUp()));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const SignUp()));
                     },
                     child: const Text(
                       " Regístrate",
@@ -359,10 +442,46 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                   ),
                 ],
               ),
+            
             ],
           ),
         ),
       ),
+      bottomNavigationBar: BottomAppBar(
+        elevation: 5,
+        color:const Color(0xFF141E5A),
+        shape: const CircularNotchedRectangle(),
+        child: Container(height: 100.0
+        ,
+          padding: const EdgeInsets.only(top: 20.0),
+          child: const Text('Iniciar Sesión con Google',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold)),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? Colors.white 
+            : Colors.blueAccent,
+        onPressed: () async {
+          //print(_idPedido);
+
+          try {
+            await signInWithGoogle();
+          } on FirebaseException {
+            //print('Error: $e');
+          }
+        },
+        child: Image.asset(
+          'images/google.png',
+          width: 50.0,
+          height: 50.0,
+          fit: BoxFit.cover,
+        )
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
     );
   }
 }

@@ -51,7 +51,7 @@ onStepTapped(int value){
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context)=> PedidosH()));
+          Navigator.push(context, MaterialPageRoute(builder: (context)=> const PedidosH()));
         },
         backgroundColor: Colors.green,
         child: const Icon(Icons.motorcycle),
@@ -70,7 +70,7 @@ onStepTapped(int value){
               Padding(
                 padding: const EdgeInsets.only(top: 0.0),
                 child: Text(
-                  '${user!.email}',
+                  user!.displayName ?? '${user!.email}',
                   style: const TextStyle(fontSize: 16, color: Colors.grey),
                 ),
               ),
@@ -86,7 +86,18 @@ onStepTapped(int value){
     Navigator.popUntil(context, ModalRoute.withName('/'));
     Navigator.popAndPushNamed(context, '/login');
   } catch (e) {
-    print("Error al cerrar sesión: $e");
+   // print("Error al cerrar sesión: $e");
+  showDialog(context: context, builder: (BuildContext context){
+    return AlertDialog(
+      title: const Text('Error'),
+      content: const Text('Error al cerrar sesión'),
+      actions: [
+        TextButton(onPressed: (){
+          Navigator.of(context).pop();
+        }, child: const Text('OK'))
+      ],
+    );
+  });
   }
               },
               icon: const Icon(Icons.login),

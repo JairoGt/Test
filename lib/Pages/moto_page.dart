@@ -3,6 +3,7 @@
 import 'package:appseguimiento/Pages/MotoristaPage/moto_asignado.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class MotoScreen extends StatelessWidget {
   const MotoScreen({super.key});
@@ -12,34 +13,40 @@ class MotoScreen extends StatelessWidget {
     return Scaffold(
    
       appBar:  AppBar(
-        centerTitle: true,
+      forceMaterialTransparency: false,
+        
+        toolbarHeight: 89,
+        automaticallyImplyLeading: false,
+        centerTitle: false,
         title: Text(greeting,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
         flexibleSpace: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            
             children: [
+              SizedBox(height: 10,),
               Padding(
-                padding: const EdgeInsets.only(top: 0.0),
+                
+                padding: const EdgeInsets.all(0),
+                
                 child: Text(
-                  '${user!.email}',
-                  style: const TextStyle(fontSize: 16, color: Colors.grey),
+                  user!.displayName ?? '${user!.email}',
+                  style: const TextStyle(fontSize: 26, color: Colors.grey),
                 ),
               ),
-              // Agregar más widgets aquí
+              
             ],
           ),
         ),
         actions: [
-         IconButton(
+          IconButton(
               onPressed: () async {
-                 try {
+                try {
+                  await GoogleSignIn().signOut();
     await FirebaseAuth.instance.signOut();
     
-
     Navigator.popUntil(context, ModalRoute.withName('/'));
-    Navigator.popAndPushNamed(context, '/login');
   } catch (e) {
     print("Error al cerrar sesión: $e");
   }
@@ -48,11 +55,12 @@ class MotoScreen extends StatelessWidget {
               color: Colors.red,
               )
         ],
+        
       ),
       body: WillPopScope(
          onWillPop: () async => false,
         child: const Center(
-          child: Text('Funciones de Motorista'),
+          child: Text('Para '),
           
           
         ),

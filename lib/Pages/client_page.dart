@@ -25,7 +25,7 @@ class ClientScreen extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(top: 0.0),
                 child: Text(
-                  '${user!.email}',
+                  user!.displayName ?? '${user!.email}',
                   style: const TextStyle(fontSize: 16, color: Colors.grey),
                 ),
               ),

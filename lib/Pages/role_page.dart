@@ -66,7 +66,7 @@ class _RolePageState extends State<RolePage> {
                   DocumentSnapshot user = _usersList[index];
                   return ListTile(
                     title: Text(user['name']),
-                    subtitle: Text(user['email']),
+                    subtitle: Text(user['role']),
                     trailing: PopupMenuButton(
 // Se quita el icono del lápiz.
                       icon: null,
