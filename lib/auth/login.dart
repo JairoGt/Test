@@ -6,6 +6,7 @@ import 'package:appseguimiento/auth/forgotpassword.dart';
 import 'package:appseguimiento/auth/signup.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -71,29 +72,54 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
       CollectionReference users = firestore.collection('users');
       DocumentReference userDocument = users.doc(useremailcontroller.text);
       DocumentSnapshot snapshot = await userDocument.get();
+
+      UserCredential? userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: useremailcontroller.text,
+        password: userpasswordcontroller.text,
+      );
+      if (!userCredential.user!.emailVerified) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        backgroundColor: Colors.orangeAccent,
+        content: Text(
+          'Por favor, verifica tu correo electrónico antes de iniciar sesión',
+          style: TextStyle(fontSize: 18.0),
+        ),
+      ));
+      Navigator.pop(context);
+    }else{
       if (snapshot.exists) {
         var role = snapshot['role'];
         if (mounted) {
           if (role == 'admin') {
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (context) => const AdminScreen(),
-              ),
+             CupertinoPageRoute(
+                            builder: (_) => const AnimatedSwitcher(
+                              duration: Duration(milliseconds: 200),
+                              child: AdminScreen(),
+                            ),
+                          ),
             );
           } else if (role == 'moto') {
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (context) => const MotoScreen(),
-              ),
+              CupertinoPageRoute(
+                            builder: (_) => const AnimatedSwitcher(
+                              duration: Duration(milliseconds: 200),
+                              child: MotoScreen(),
+                            ),
+                          ),
             );
           } else if (role == 'client') {
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (context) => const ClientScreen(),
-              ),
+             CupertinoPageRoute(
+                            builder: (_) => const AnimatedSwitcher(
+                              duration: Duration(milliseconds: 200),
+                              child: ClientScreen(),
+                            ),
+                          ),
             );
           } else {
             showDialog(
@@ -133,6 +159,8 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
           );
         }
       }
+    }
+      
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         if (mounted) {
@@ -200,16 +228,22 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
             
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (context) => const AdminScreen(),
-              ),
+              CupertinoPageRoute(
+                            builder: (_) => const AnimatedSwitcher(
+                              duration: Duration(milliseconds: 200),
+                              child: AdminScreen(),
+                            ),
+                          ),
             );
           } else if (role == 'moto') {
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (context) => const MotoScreen(),
-              ),
+             CupertinoPageRoute(
+                            builder: (_) => const AnimatedSwitcher(
+                              duration: Duration(milliseconds: 200),
+                              child: MotoScreen(),
+                            ),
+                          ),
             );
           } else {
             showDialog(
@@ -240,9 +274,12 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
 
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => const ClientScreen(),
-            ),
+            CupertinoPageRoute(
+                            builder: (_) => const AnimatedSwitcher(
+                              duration: Duration(milliseconds: 200),
+                              child: ClientScreen(),
+                            ),
+                          ),
           );
         }
       }
@@ -370,8 +407,13 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                 onTap: () {
                   Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => const ForgotPassword()));
+                     CupertinoPageRoute(
+                            builder: (_) => const AnimatedSwitcher(
+                              duration: Duration(milliseconds: 200),
+                              child: ForgotPassword(),
+                            ),
+                          ),
+                          );
                 },
                 child: Container(
                   padding: const EdgeInsets.only(right: 24.0),
@@ -429,8 +471,13 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                     onTap: () {
                       Navigator.push(
                           context,
-                          MaterialPageRoute(
-                              builder: (context) => const SignUp()));
+                          CupertinoPageRoute(
+                            builder: (_) => const AnimatedSwitcher(
+                              duration: Duration(milliseconds: 200),
+                              child: SignUp(),
+                            ),
+                          ),
+                              );
                     },
                     child: const Text(
                       " Regístrate",

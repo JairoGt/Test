@@ -48,14 +48,18 @@ class _AsignarPedidosState extends State<AsignarPedidos> {
     pedidosRef.where('estadoid', isEqualTo: 1).snapshots().listen((snapshot) {
       pedidos = snapshot.docs;
 
-      setState(() {});
+       if (mounted) {
+                setState(() {});
+              }
     });
 
     // Obtener motoristas
     motoristasRef.snapshots().listen((snapshot) {
       motoristas = snapshot.docs;
 
-      setState(() {});
+        if (mounted) {
+                setState(() {});
+              }
     });
   }
 
@@ -174,7 +178,9 @@ class _AsignarPedidosState extends State<AsignarPedidos> {
                                                   ['email']
                                               : '';
                                           // Actualiza el widget
-                                          setState(() {});
+                                            if (mounted) {
+                setState(() {});
+              }
                                         },
                                       ),
                                     );
@@ -232,6 +238,7 @@ class _AsignarPedidosState extends State<AsignarPedidos> {
              
 
 // Navegar a otra página
+              
                 Navigator.popAndPushNamed(context, '/listaPedidos');
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(

@@ -4,6 +4,7 @@ import 'package:appseguimiento/Pages/MotoristaPage/moto_asignado.dart';
 import 'package:appseguimiento/Pages/cliente/cliente2.dart';
 //import 'package:appseguimiento/Pages/cliente/cliente2.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ClientScreen extends StatelessWidget {
@@ -79,9 +80,12 @@ class ClientScreen extends StatelessWidget {
 
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => const ClienteTrack(),
-            ),
+            CupertinoPageRoute(
+                            builder: (_) => const AnimatedSwitcher(
+                              duration: Duration(milliseconds: 200),
+                              child: ClienteTrack(),
+                            ),
+                          ),
           );
         },
         child: const Icon(Icons.assignment_sharp),

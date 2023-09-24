@@ -4,6 +4,7 @@
 import 'package:appseguimiento/auth/login.dart';
 import 'package:appseguimiento/auth/signup.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ForgotPassword extends StatefulWidget {
@@ -178,8 +179,13 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                               onTap: () {
                                 Navigator.push(
                                     context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>const SignUp()));
+                                    CupertinoPageRoute(
+                            builder: (_) => const AnimatedSwitcher(
+                              duration: Duration(milliseconds: 200),
+                              child: SignUp(),
+                            ),
+                          ),
+                                        );
                               },
                               child: const Text("Crear Cuenta",
                                   style: TextStyle(

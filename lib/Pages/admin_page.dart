@@ -1,10 +1,12 @@
 // ignore_for_file: use_build_context_synchronously, avoid_print
 
+import 'package:appseguimiento/Pages/MotoristaPage/reasignacion.dart';
 import 'package:appseguimiento/Pages/asignacion_page.dart';
 import 'package:appseguimiento/Pages/edit_pedidos.dart';
 import 'package:appseguimiento/Pages/list_page.dart';
 import 'package:appseguimiento/Pages/pedidosScreen.dart';
 import 'package:appseguimiento/Pages/role_page.dart';
+ import 'package:flutter/cupertino.dart';
 //import 'package:appseguimiento/auth/login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -174,12 +176,17 @@ class _AdminScreenState extends State<AdminScreen>
                   child: ElevatedButton(
                     child: const Text('Asignar Rol'),
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const RolePage(),
-                        ),
-                      );
+                      
+                        Navigator.push(
+                          context,
+                          CupertinoPageRoute(
+                            builder: (_) => const AnimatedSwitcher(
+                              duration: Duration(milliseconds: 200),
+                              child: RolePage(),
+                            ),
+                          ),
+                        );
+                      
                     },
                   ),
                 ),
@@ -193,9 +200,12 @@ class _AdminScreenState extends State<AdminScreen>
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => const PedidosPage(),
-                        ),
+                         CupertinoPageRoute(
+                            builder: (_) => const AnimatedSwitcher(
+                              duration: Duration(milliseconds: 200),
+                              child: PedidosPage(),
+                            ),
+                          ),
                       );
                     },
                   ),
@@ -210,9 +220,12 @@ class _AdminScreenState extends State<AdminScreen>
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => const CrearPedidoScreen(),
-                        ),
+                        CupertinoPageRoute(
+                            builder: (_) => const AnimatedSwitcher(
+                              duration: Duration(milliseconds: 200),
+                              child: CrearPedidoScreen(),
+                            ),
+                          ),
                       );
                     },
                   ),
@@ -227,9 +240,12 @@ class _AdminScreenState extends State<AdminScreen>
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => const AsignarPedidos(),
-                        ),
+                       CupertinoPageRoute(
+                            builder: (_) => const AnimatedSwitcher(
+                              duration: Duration(milliseconds: 200),
+                              child: AsignarPedidos(),
+                            ),
+                          ),
                       );
                     },
                   ),
@@ -244,15 +260,38 @@ class _AdminScreenState extends State<AdminScreen>
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) =>  const EditarPedido(),
-                        ),
+                       CupertinoPageRoute(
+                            builder: (_) => const AnimatedSwitcher(
+                              duration: Duration(milliseconds: 200),
+                              child: EditarPedido(),
+                            ),
+                          ),
                       );
                     },
                   ),
                 ),
 
-              
+              AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                  width: 100,
+                  height: 100,
+                  child: ElevatedButton(
+                    child: const Text('ReAsignar Pedido'),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                      CupertinoPageRoute(
+                            builder: (_) => const AnimatedSwitcher(
+                              duration: Duration(milliseconds: 200),
+                              child: ReasignarPedidos(),
+                            ),
+                          ),
+                      );
+                    },
+                  ),
+                ),
+
               ],
               
             ),

@@ -3,6 +3,7 @@
 import 'package:appseguimiento/auth/login.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class SignUp extends StatefulWidget {
@@ -28,11 +29,24 @@ class _SignUpState extends State<SignUp> {
         email: mailcontroller.text,
         password: passwordcontroller.text,
       );
+         await userCredential.user!.sendEmailVerification();
+ ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          backgroundColor: Colors.orangeAccent,
+          content: Text(
+            'Se ha enviado un correo de verificación',
+            style: TextStyle(fontSize: 18.0),
+          ),
+        ));
 
       //Si se loguea correctamente, lo redirecciona a la pantalla de inicio
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const Login()),
+        CupertinoPageRoute(
+                            builder: (_) => const AnimatedSwitcher(
+                              duration: Duration(milliseconds: 200),
+                              child: Login(),
+                            ),
+                          ),
       );
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
@@ -263,8 +277,13 @@ class _SignUpState extends State<SignUp> {
                       onTap: () {
                         Navigator.push(
                             context,
-                            MaterialPageRoute(
-                                builder: (context) => const Login()));
+                            CupertinoPageRoute(
+                            builder: (_) => const AnimatedSwitcher(
+                              duration: Duration(milliseconds: 200),
+                              child: Login(),
+                            ),
+                          ),
+                                );
                       },
                       child: const Text(
                         " Inicia sesion",

@@ -5,6 +5,7 @@ import 'package:appseguimiento/Pages/cliente/history.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/cupertino.dart';
 
 
 import 'package:flutter/material.dart';
@@ -51,7 +52,13 @@ onStepTapped(int value){
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context)=> const PedidosH()));
+          Navigator.push(context, CupertinoPageRoute(
+                            builder: (_) => const AnimatedSwitcher(
+                              duration: Duration(milliseconds: 200),
+                              child: PedidosH(),
+                            ),
+                          ),
+          );
         },
         backgroundColor: Colors.green,
         child: const Icon(Icons.motorcycle),

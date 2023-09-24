@@ -2,6 +2,7 @@
 
 import 'package:appseguimiento/Pages/MotoristaPage/moto_asignado.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -73,8 +74,11 @@ class MotoScreen extends StatelessWidget {
         onPressed: () async {
         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => const MotoPage(),
+                         CupertinoPageRoute(
+                            builder: (_) => const AnimatedSwitcher(
+                              duration: Duration(milliseconds: 200),
+                              child: MotoPage(),
+                            ),
                           ),
                         );
         },
