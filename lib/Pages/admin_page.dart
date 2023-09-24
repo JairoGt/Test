@@ -191,6 +191,7 @@ class _AdminScreenState extends State<AdminScreen>
                   ),
                 ),
                 AnimatedContainer(
+                  
                   duration: const Duration(milliseconds: 300),
                   curve: Curves.easeInOut,
                   width: 200,
@@ -198,15 +199,20 @@ class _AdminScreenState extends State<AdminScreen>
                   child: ElevatedButton(
                     child: const Text('Listado de Pedidos'),
                     onPressed: () {
+                    
+                    
+                   // showLoadingDialog(context);
                       Navigator.push(
                         context,
                          CupertinoPageRoute(
+                          
                             builder: (_) => const AnimatedSwitcher(
                               duration: Duration(milliseconds: 200),
                               child: PedidosPage(),
                             ),
-                          ),
+                          ) as Route<Object>,
                       );
+                      
                     },
                   ),
                 ),
