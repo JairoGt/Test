@@ -122,16 +122,18 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                           ),
             );
           } else {
+            
             showDialog(
               context: context,
               builder: (context) => AlertDialog(
-                title: const Text('Unauthorized'),
+                title: const Text('Error'),
                 content: const Text(
-                    'You are not authorized to access the application.'),
+                    'You are not authorized to access the application.aqui'),
                 actions: <Widget>[
                   ElevatedButton(
                     child: const Text('OK'),
-                    onPressed: () {
+                    onPressed: () async{
+                      await GoogleSignIn().signOut();
                       Navigator.pop(context);
                     },
                   ),
@@ -142,16 +144,18 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
         }
       } else {
         if (mounted) {
+          
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
-              title: const Text('Unauthorized'),
-              content: const Text('The user does not exist.'),
+              title: const Text('Error'),
+              content: const Text('Comuníquese con el administrador.'),
               actions: <Widget>[
                 ElevatedButton(
                   child: const Text('OK'),
-                  onPressed: () {
+                  onPressed: ()async {
                     Navigator.pop(context);
+                    await GoogleSignIn().signOut();
                   },
                 ),
               ],
@@ -210,6 +214,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
 
       if (userCredential != null) {
          showLoadingDialog(context);
+         //Navigator.popUntil(context, ModalRoute.withName('/'));
         // Get the user's email
         final String email = userCredential.user!.email!;
         FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -245,24 +250,17 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                             ),
                           ),
             );
-          } else {
-            showDialog(
-              context: context,
-              builder: (context) => AlertDialog(
-                title: const Text('Unauthorized'),
-                content: const Text(
-                    'You are not authorized to access the application.'),
-                actions: <Widget>[
-                  ElevatedButton(
-                    child: const Text('OK'),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                ],
-              ),
+          } else if (role == 'client') {
+            Navigator.push(
+              context,
+             CupertinoPageRoute(
+                            builder: (_) => const AnimatedSwitcher(
+                              duration: Duration(milliseconds: 200),
+                              child: ClientScreen(),
+                            ),
+                          ),
             );
-          }
+          } 
         } else {
           // If the document does not exist, create it with the role of 'client'
           userDocument.set({

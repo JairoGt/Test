@@ -148,10 +148,12 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                 onTap: () {
                                   Navigator.pushAndRemoveUntil(
                                       context,
-                                      PageRouteBuilder(
-                                        pageBuilder: (context, a, b) => const Login(),
-                                        transitionDuration:const Duration(seconds: 0),
-                                      ),
+                                       CupertinoPageRoute(
+                            builder: (_) => const AnimatedSwitcher(
+                              duration: Duration(milliseconds: 200),
+                              child: Login(),
+                            ),
+                          ),
                                       (route) => false);
                                 },
                                 child: Container(

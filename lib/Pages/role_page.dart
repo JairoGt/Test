@@ -28,7 +28,9 @@ class _RolePageState extends State<RolePage> {
   void _getUsers() async {
     QuerySnapshot usersSnapshot = await _firestore.collection('users').get();
     _usersList = usersSnapshot.docs;
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   void _updateRole(String email, String role) async {
@@ -69,7 +71,7 @@ class _RolePageState extends State<RolePage> {
                     subtitle: Text(user['role']),
                     trailing: PopupMenuButton(
 // Se quita el icono del lápiz.
-                      icon: null,
+                      icon: const Icon(Icons.change_history),
                       itemBuilder: (BuildContext context) => [
 // Se agregan las opciones de rol.
                         const PopupMenuItem(
@@ -103,6 +105,12 @@ class _RolePageState extends State<RolePage> {
                                 onPressed: () {
 // Se asigna la selección actual a la variable _selectedRole.
 // Se llama a la función _updateRole() para actualizar el rol del usuario.
+                                  if(mounted){
+                                    setState(() {
+                                      
+                                    });
+                                  }
+
                                   _updateRole(user['email'], role);
                                   Navigator.of(context).pop();
                                 },

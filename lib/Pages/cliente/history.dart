@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:printing/printing.dart';
@@ -212,7 +213,7 @@ await Printing.sharePdf(bytes: bytes);
           }, icon: const Icon(Icons.picture_as_pdf_outlined))
         ],
     
-        title: Text('Historial de pedidos de: ${user!.displayName ?? '${user!.email}'}',
+        title: Text('Historial de pedidos',
             style: TextStyle(
                 color: Colors.grey, fontSize: 20, fontWeight: FontWeight.bold)),
       ),
@@ -236,19 +237,17 @@ await Printing.sharePdf(bytes: bytes);
                       child: Row(
                         children: [
                           Expanded(
-                            child: Row(
-                              children: [
-                                Icon(pedido['estadoid'] == '1'
-                                    ? Icons.hourglass_empty
-                                    : pedido['estadoid'] == '2'
-                                        ? Icons.e_mobiledata
-                                        : pedido['estadoid'] == '3'
-                                            ? Icons.check
-                                            : Icons.motorcycle),
-                                const SizedBox(width: 10),
-                                Text(pedido['idpedidos'] ??
-                                    'No disponible'), 
-                              ],
+                            child: GestureDetector(
+                              child: Text(
+                                pedido['idpedidos'].toString(),
+                                
+                                style: const TextStyle(fontSize: 20),
+                                
+                              ),
+                              onLongPress: (){
+                                final clipboardData = ClipboardData(text: pedido['idpedidos'].toString());
+              Clipboard.setData(clipboardData);
+                              },
                             ),
                           ),
                           Expanded(
@@ -264,7 +263,7 @@ await Printing.sharePdf(bytes: bytes);
                           Expanded(
                             child: Text(
                               DateFormat('d/M/y').format(pedido['fechaCreacion'].toDate()), // Proporciona un valor predeterminado si el campo no existe
-                              style: const TextStyle(fontSize: 20),
+                              style: const TextStyle(fontSize: 18),
                             ),
                           ),
                         ],

@@ -51,8 +51,7 @@ class _MotoPageState extends State<MotoPage> {
     motoristasRef.snapshots().listen((snapshot) {
       motoristas = snapshot.docs;
 
-      setState(() {});
-    });
+          });
     // Obtener el ID del motorista
 
     _idMotorista = auth.currentUser!.email.toString();
@@ -65,7 +64,7 @@ class _MotoPageState extends State<MotoPage> {
         .listen((snapshot) {
       pedidosAsignados = snapshot.docs;
 
-      setState(() {});
+      
     });
   }
 

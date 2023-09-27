@@ -23,7 +23,7 @@ class ClienteTrack extends StatefulWidget {
 
 class _ClienteTrackState extends State<ClienteTrack> {
   final _firestore = FirebaseFirestore.instance;
-
+late User userLocal;
 
   String _trackingNumber = '';
   String _texto1 = '';
@@ -52,6 +52,7 @@ onStepTapped(int value){
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+          Navigator.popAndPushNamed(context, '/tracking');
           Navigator.push(context, CupertinoPageRoute(
                             builder: (_) => const AnimatedSwitcher(
                               duration: Duration(milliseconds: 200),
@@ -63,56 +64,7 @@ onStepTapped(int value){
         backgroundColor: Colors.green,
         child: const Icon(Icons.motorcycle),
       ),
-      appBar: AppBar(
-     automaticallyImplyLeading: false,
       
-        centerTitle: true,
-        title: Text(greeting,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-        flexibleSpace: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 0.0),
-                child: Text(
-                  user!.displayName ?? '${user!.email}',
-                  style: const TextStyle(fontSize: 16, color: Colors.grey),
-                ),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          IconButton(
-              onPressed: () async {
-                try {
-    await FirebaseAuth.instance.signOut();
-    
-    Navigator.popUntil(context, ModalRoute.withName('/'));
-    Navigator.popAndPushNamed(context, '/login');
-  } catch (e) {
-   // print("Error al cerrar sesión: $e");
-  showDialog(context: context, builder: (BuildContext context){
-    return AlertDialog(
-      title: const Text('Error'),
-      content: const Text('Error al cerrar sesión'),
-      actions: [
-        TextButton(onPressed: (){
-          Navigator.of(context).pop();
-        }, child: const Text('OK'))
-      ],
-    );
-  });
-  }
-              },
-              icon: const Icon(Icons.login),
-              color: Colors.red,
-              )
-        ],
-        
-      ),
       body: SingleChildScrollView(
           
           child: Center(
@@ -132,7 +84,7 @@ onStepTapped(int value){
                       ),
                     ),
                     onChanged: (value) {
-                      value = value.toUpperCase();
+                      value = value.toUpperCase().trim();
                       _trackingNumber = value;
                     },
                   ),
