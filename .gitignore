@@ -46,4 +46,4 @@ app.*.map.json
 .gradle
 
 # Ignore Gradle build output directory
-build
+

@@ -1,4 +1,4 @@
-import 'package:bottom_navy_bar/bottom_navy_bar.dart';
+//import 'package:bottom_navy_bar/bottom_navy_bar.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:appseguimiento/Pages/providers/pedidos_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
+//import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'dart:io';
 
 import 'package:printing/printing.dart';
