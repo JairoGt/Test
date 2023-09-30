@@ -32,146 +32,145 @@ class _PedidosPageState extends State<PedidosPage> {
   }
 
   Future<void> generatePDF(
-      BuildContext context, List<DocumentSnapshot<Object?>> data) async {
-    final pdf = pw.Document();
-    final pedidos = await pedidosProvider.getPedidos();
-    pedidos.sort(_compareFechas);
+    BuildContext context, List<DocumentSnapshot<Object?>> data) async {
+  final pdf = pw.Document();
 
-    // Filtrar los pedidos según las fechas seleccionadas
-    if (_fechaInicio != null && _fechaFin != null) {
-      pedidos.retainWhere((pedido) =>
-          pedido['fechaCreacion'].toDate().isAfter(_fechaInicio!) &&
-          pedido['fechaCreacion'].toDate().isBefore(_fechaFin!));
-    }
+  // Filtrar los pedidos según las fechas seleccionadas
+  final pedidos = data.where((pedido) {
+  final fechaCreacion = pedido['fechaCreacion'].toDate();
+  return (_fechaInicio == null || fechaCreacion.isAfter(_fechaInicio!)) &&
+         (_fechaFin == null || fechaCreacion.isBefore(_fechaFin!.add(Duration(days: 1)))) &&
+         (_fechaInicio != null || _fechaFin != null || fechaCreacion.isAtSameMomentAs(_fechaFin!));
+});
 
-    // Sumar el precio total de los pedidos entregados
-    final totalEntregado = pedidos.fold<double>(0, (total, pedido) {
-      if (pedido['estadoid'] == 4) {
-        return total + pedido['precioTotal'];
-      } else {
-        return total;
-      }
-    });
-
-    pdf.addPage(
-      pw.MultiPage(
-        build: (context) {
-          return [
-            pw.Container(
-              child: pw.Paragraph(
-                text: '   Lista de pedidos      ',
-                style: pw.TextStyle(
-                  fontSize: 24,
-                  fontWeight: pw.FontWeight.bold,
-                ),
-              ),
-              decoration: pw.BoxDecoration(
-                border: pw.Border.all(),
-              ),
-            ),
-            pw.Table(
-              border: pw.TableBorder.all(),
-              columnWidths: {
-                0: pw.IntrinsicColumnWidth(),
-                1: pw.IntrinsicColumnWidth(),
-                2: pw.IntrinsicColumnWidth(),
-                3: pw.IntrinsicColumnWidth(),
-                4: pw.IntrinsicColumnWidth(),
-              },
-              children: <pw.TableRow>[
-                pw.TableRow(
-                  children: <pw.Widget>[
-                    pw.Text('Tracking '),
-                    pw.Text('Dirección'),
-                    pw.Text('Estado'),
-                    pw.Text('Total a pagar'),
-                    pw.Text('Fecha de Pedido'),
-                  ],
-                ),
-                ...pedidos.map((pedido) => pw.TableRow(
-                      children: <pw.Widget>[
-                        pw.Text(pedido['idpedidos'].toString()),
-                        pw.Text(pedido['direccion'] ?? ''),
-                        pw.Text(pedido['estadoid'] == 1
-                            ? ' CREADO '
-                            : pedido['estadoid'] == 2
-                                ? ' DESPACHADO '
-                                : pedido['estadoid'] == 3
-                                    ? ' EN CAMINO '
-                                    : pedido['estadoid'] == 4
-                                        ? ' ENTREGADO '
-                                        : ''),
-                        pw.Text('Q${pedido['precioTotal']}'),
-                        pw.Text(DateFormat('d/M/y')
-                            .format(pedido['fechaCreacion'].toDate())),
-                      ],
-                    )),
-              ],
-            ),
-            pw.SizedBox(height: 20),
-            pw.Text('Total entregado: Q$totalEntregado'),
-          ];
-        },
-      ),
-    );
-
-    final bytes = await pdf.save();
-
-    await Printing.sharePdf(bytes: bytes);
-
-    // Obtener la ubicación de la carpeta de almacenamiento externo compartido
-    final externalDir = await getExternalStorageDirectory();
-
-    if (externalDir != null) {
-      final pdfFile = File('${externalDir.path}/archivo.pdf');
-
-      // Guardar el PDF en la carpeta de almacenamiento externo compartido
-      await pdfFile.writeAsBytes(bytes);
-
-      // Verificar si el archivo se ha guardado correctamente
-      if (await pdfFile.exists()) {
-        // Mostrar un cuadro de diálogo de éxito
-        showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: const Text('Éxito'),
-              content: const Text('PDF guardado en la carpeta de Descargas'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(); // Cerrar el cuadro de diálogo
-                  },
-                  child: const Text('OK'),
-                ),
-              ],
-            );
-          },
-        );
-      } else {
-        // Mostrar un cuadro de diálogo de error
-        showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: const Text('Error'),
-              content: const Text('Error al guardar el PDF'),
-              actions: <Widget>[
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(); // Cerrar el cuadro de diálogo
-                  },
-                  child: const Text('OK'),
-                ),
-              ],
-            );
-          },
-        );
-      }
+  // Sumar el precio total de los pedidos entregados
+  final totalEntregado = pedidos.fold<double>(0, (total, pedido) {
+    if (pedido['estadoid'] == 4) {
+      return total + pedido['precioTotal'];
     } else {
-      // Manejar el caso en el que la
+      return total;
     }
+  });
+
+  pdf.addPage(
+    pw.MultiPage(
+      build: (context) {
+        return [
+          pw.Container(
+            child: pw.Paragraph(
+              text: '   Lista de pedidos      ',
+              style: pw.TextStyle(
+                fontSize: 24,
+                fontWeight: pw.FontWeight.bold,
+              ),
+            ),
+            decoration: pw.BoxDecoration(
+              border: pw.Border.all(),
+            ),
+          ),
+          pw.Table(
+            border: pw.TableBorder.all(),
+            columnWidths: {
+              0: pw.IntrinsicColumnWidth(),
+              1: pw.IntrinsicColumnWidth(),
+              2: pw.IntrinsicColumnWidth(),
+              3: pw.IntrinsicColumnWidth(),
+              4: pw.IntrinsicColumnWidth(),
+            },
+            children: <pw.TableRow>[
+              pw.TableRow(
+                children: <pw.Widget>[
+                  pw.Text('Tracking '),
+                  pw.Text('Dirección'),
+                  pw.Text('Estado'),
+                  pw.Text('Total a pagar'),
+                  pw.Text('Fecha de Pedido'),
+                ],
+              ),
+              ...pedidos.map((pedido) => pw.TableRow(
+                    children: <pw.Widget>[
+                      pw.Text(pedido['idpedidos'].toString()),
+                      pw.Text(pedido['direccion'] ?? ''),
+                      pw.Text(pedido['estadoid'] == 1
+                          ? ' CREADO '
+                          : pedido['estadoid'] == 2
+                              ? ' DESPACHADO '
+                              : pedido['estadoid'] == 3
+                                  ? ' EN CAMINO '
+                                  : pedido['estadoid'] == 4
+                                      ? ' ENTREGADO '
+                                      : ''),
+                      pw.Text('Q${pedido['precioTotal']}'),
+                      pw.Text(DateFormat('d/M/y')
+                          .format(pedido['fechaCreacion'].toDate())),
+                    ],
+                  )),
+            ],
+          ),
+          pw.SizedBox(height: 20),
+          pw.Text('Total entregado: Q$totalEntregado'),
+        ];
+      },
+    ),
+  );
+
+  final bytes = await pdf.save();
+
+  await Printing.sharePdf(bytes: bytes);
+
+  // Obtener la ubicación de la carpeta de almacenamiento externo compartido
+  final externalDir = await getExternalStorageDirectory();
+
+  if (externalDir != null) {
+    final pdfFile = File('${externalDir.path}/archivo.pdf');
+
+    // Guardar el PDF en la carpeta de almacenamiento externo compartido
+    await pdfFile.writeAsBytes(bytes);
+
+    // Verificar si el archivo se ha guardado correctamente
+    if (await pdfFile.exists()) {
+      // Mostrar un cuadro de diálogo de éxito
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Éxito'),
+            content: const Text('PDF guardado en la carpeta de Descargas'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Cerrar el cuadro de diálogo
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      // Mostrar un cuadro de diálogo de error
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Error'),
+            content: const Text('Error al guardar el PDF'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Cerrar el cuadro de diálogo
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  } else {
+    // Manejar el caso en el que la
   }
+}
 
   int _selectedIndex = 0; // Índice del ítem seleccionado
 
