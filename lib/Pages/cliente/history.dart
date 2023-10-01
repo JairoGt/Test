@@ -251,7 +251,7 @@ await Printing.sharePdf(bytes: bytes);
                             ),
                           ),
                           Expanded(
-                            child: Text(pedido['direccion'] ??
+                            child: Text(pedido['nombres'] ??
                                 'No disponible'), 
                           ),
                           Expanded(

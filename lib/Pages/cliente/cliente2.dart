@@ -24,12 +24,15 @@ class ClienteTrack extends StatefulWidget {
 class _ClienteTrackState extends State<ClienteTrack> {
   final _firestore = FirebaseFirestore.instance;
 late User userLocal;
-
+  final _trackingNumberController = TextEditingController();
   String _trackingNumber = '';
   String _texto1 = '';
   String _texto2 = '';
   int currentState = 0;
-  
+  bool _isButtonEnabled = false;
+  final _formKey = GlobalKey<FormState>();
+  final _trackingNumberFocusNode = FocusNode();
+
   var _circle1 = AnimatedContainer(
     duration: const Duration(seconds: 1),
     curve: Curves.easeInOut,
@@ -41,216 +44,314 @@ late User userLocal;
   Color clamp(int value, int min, int max) {
     return Color(value.clamp(min, max));
   }
-
+void _onEditingComplete() {
+    _onTrackingNumberChanged();
+    _trackingNumberFocusNode.unfocus();
+  }
 onStepTapped(int value){
   setState(() {
     currentState = value;
   });
 }
+ @override
+  void initState() {
+    super.initState();
+    _trackingNumberController.addListener(_onTrackingNumberChanged);
+  }
+
+  @override
+  void dispose() {
+    _trackingNumberController.dispose();
+     _trackingNumberFocusNode.dispose();
+    super.dispose();
+  }
+
+void _onTrackingNumberChanged() {
+  setState(() {
+    _isButtonEnabled = _formKey.currentState?.validate() ?? false;
+          _trackingNumber = _trackingNumberController.text.toUpperCase().trim().replaceAll(' ', '');
+
+  });
+}
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.popAndPushNamed(context, '/tracking');
-          Navigator.push(context, CupertinoPageRoute(
-                            builder: (_) => const AnimatedSwitcher(
-                              duration: Duration(milliseconds: 200),
-                              child: PedidosH(),
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+        _onTrackingNumberChanged();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Seguimiento de pedidos'),
+          actions: [
+            IconButton(// Hacer un refresh de la página
+              onPressed: () {
+                setState(() {
+                  _trackingNumberController.clear();
+                  _trackingNumber = '';
+                  _texto1 = '';
+                  _texto2 = '';
+                  _circle1 = AnimatedContainer(
+                    duration: const Duration(seconds: 1),
+                    curve: Curves.easeInOut,
+                    width: 100,
+                    height: 100,
+                    child: const Icon(Icons.check_circle, color: Colors.green),
+                  );
+                });
+              },
+              icon: const Icon(Icons.refresh_outlined,
+              color: Colors.green,
+              ),
+            ),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.popAndPushNamed(context, '/tracking');
+            Navigator.push(context, CupertinoPageRoute(
+                              builder: (_) => const AnimatedSwitcher(
+                                duration: Duration(milliseconds: 200),
+                                child: PedidosH(),
+                              ),
                             ),
+            );
+          },
+          backgroundColor: Colors.green,
+          child: const Icon(Icons.history),
+        ),
+        
+        body: SingleChildScrollView(
+            
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Form(
+                      key: _formKey,
+                      child: TextFormField(
+                        
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        controller: _trackingNumberController,
+                        focusNode: _trackingNumberFocusNode,
+                        
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(18)
                           ),
-          );
-        },
-        backgroundColor: Colors.green,
-        child: const Icon(Icons.motorcycle),
-      ),
-      
-      body: SingleChildScrollView(
-          
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(30),
-                  child: TextField(
-                    
-                    decoration: InputDecoration(
-                      labelText: 'Número de seguimiento',
-                      prefixIcon: const Icon(Icons.search),
-                      suffixIcon: const Icon(Icons.track_changes),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
+                          labelText: 'ID del pedido',
+                        ),
+                       onChanged: (value) {
+                        setState(() {
+                          
+                            value = value.toUpperCase().trim().replaceAll(' ', '');
+                            _trackingNumber = value;
+                            _onTrackingNumberChanged();
+                        
+                        });
+                        
+                          },
+                          onEditingComplete: _onEditingComplete,
+                          validator: (value) {
+                              if (value == null || !(value.contains('GT') || value.contains('gt'))) {
+                            return 'El ID del pedido debe contener "GT"';
+                              }
+                              if (value.length < 4){
+                            return'El tracking es invalido revisa el numero';
+                              }
+                              return null;
+                            },
                       ),
                     ),
-                    onChanged: (value) {
-                      value = value.toUpperCase().trim();
-                      _trackingNumber = value;
-                    },
                   ),
-                ),
-                const SizedBox(height: 30),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _circle1,
-                  ],
-                ),
-                const SizedBox(height: 4),
-                  
-                    // Código para consultar el pedido y mostrar el estado
-            ElevatedButton(
-                  onPressed: () async {
-        
-                    if (_trackingNumber.isNotEmpty) {
-                      final pedido = await _firestore
-                          .collection('pedidos')
-                          .doc(_trackingNumber)
-                          .get();
-        
-                      if (pedido.exists) {
-                        _texto1 = '';
-                        _texto2 = '';
-        
-                        final estados = pedido['estadoid'].toString().split(',');
-        
-                        // Itera sobre los estados de los pedidos y establece el estado actual del Stepper.
-                        for (int i = 0; i < estados.length; i++) {
-                          setState(() {});
-                        }
-                        for (final estado in estados) {
-                          setState(() {
-                            _circle1 = AnimatedContainer(
-                              duration: const Duration(seconds: 1),
-                              curve: Curves.easeInOut,
-                              width: MediaQuery.of(context).size.width,
-                              height: 400,
-                              child: Stepper(
-                                onStepTapped: onStepTapped,
-                                controlsBuilder: (BuildContext context,
-                                    ControlsDetails details) {
-                                  return const Row(
-                                    children: <Widget>[
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _circle1,
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                    
+                      // Código para consultar el pedido y mostrar el estado
+              ElevatedButton(
+                    onPressed: _isButtonEnabled ? () async {
+          
+                      if (_trackingNumber.isNotEmpty) {
+                        final pedido = await _firestore
+                            .collection('pedidos')
+                            .doc(_trackingNumber)
+                            .get();
+          
+                        if (pedido.exists) {
+                          _texto1 = '';
+                          _texto2 = '';
+          
+                          final estados = pedido['estadoid'].toString().split(',');
+          
+                          // Itera sobre los estados de los pedidos y establece el estado actual del Stepper.
+                          for (int i = 0; i < estados.length; i++) {
+                            setState(() {});
+                          }
+                          for (final estado in estados) {
+                            setState(() {
+                              _circle1 = AnimatedContainer(
+                                duration: const Duration(seconds: 1),
+                                curve: Curves.easeInOut,
+                                width: MediaQuery.of(context).size.width,
+                                height: 400,
+                                child: Stepper(
+                                  onStepTapped: onStepTapped,
+                                  controlsBuilder: (BuildContext context,
+                                      ControlsDetails details) {
+                                    return const Row(
+                                      children: <Widget>[
+                                        
+                                      ],
+                                    );
+                                  },
+                                  currentStep: int.parse(estado) - 1,
+                                  steps: [
+                                    Step(
+                                      state: int.parse(estado) >= 1
+                                          ? StepState.complete
+                                          : StepState.disabled,
+                                      isActive: int.parse(estado) >= 1,
+                                      title: const Text('Creado'),
+                                      subtitle: Text(
+                                          'Tu pedido fue creado el ${DateFormat('d/M/y').format(pedido['fechaCreacion'].toDate())}\n alas ${DateFormat('HH:mm').format(pedido['fechaCreacion'].toDate())}'),
+                                      content: Center(
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(1.0),
+                                          child: CircleAvatar(
+                                            backgroundColor: Colors.white,
+                                            child: Icon(
+                                              getIcon(pedido['estadoid'].toString())
+                                                  .icon,
+                                              color: Colors.green,
+                                              size: 50,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Step(
                                       
-                                    ],
-                                  );
-                                },
-                                currentStep: int.parse(estado) - 1,
-                                steps: [
-                                  Step(
-                                    state: int.parse(estado) >= 1
-                                        ? StepState.complete
-                                        : StepState.disabled,
-                                    isActive: int.parse(estado) >= 1,
-                                    title: const Text('Creado'),
-                                    subtitle: Text(
-                                        'Tu pedido fue creado el ${DateFormat('d/M/y').format(pedido['fechaCreacion'].toDate())}\n alas ${DateFormat('HH:mm').format(pedido['fechaCreacion'].toDate())}'),
-                                    content: Center(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(1.0),
+                                      state: int.parse(estado) >= 2
+                                          ? StepState.complete
+                                          : StepState.disabled,
+          
+                                        
+                                      isActive: int.parse(estado) >= 2,
+                                      title: const Text('En Proceso'),
+                                      subtitle: Visibility(
+                                        visible: int.parse(estado) >= 2 ? true : false,
+                                        child: Text(
+                                            'Ya fue Despachado el ${DateFormat('d/M/y').format(pedido['fechadespacho'].toDate())}\n alas ${DateFormat('HH:mm').format(pedido['fechadespacho'].toDate())}'),
+                                      ),
+                                      content: Padding(
+                                        padding: const EdgeInsets.all(8.0),
                                         child: CircleAvatar(
                                           backgroundColor: Colors.white,
                                           child: Icon(
                                             getIcon(pedido['estadoid'].toString())
                                                 .icon,
-                                            color: Colors.green,
-                                            size: 50,
+                                            color: Colors.amberAccent,
+                                            size: 20,
                                           ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                  Step(
-                                    
-                                    state: int.parse(estado) >= 2
-                                        ? StepState.complete
-                                        : StepState.disabled,
-        
-                                      
-                                    isActive: int.parse(estado) >= 2,
-                                    title: const Text('En Proceso'),
-                                    subtitle: Visibility(
-                                      visible: int.parse(estado) >= 2 ? true : false,
-                                      child: Text(
-                                          'Ya fue Despachado el ${DateFormat('d/M/y').format(pedido['fechadespacho'].toDate())}\n alas ${DateFormat('HH:mm').format(pedido['fechadespacho'].toDate())}'),
-                                    ),
-                                    content: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: CircleAvatar(
-                                        backgroundColor: Colors.white,
-                                        child: Icon(
-                                          getIcon(pedido['estadoid'].toString())
-                                              .icon,
-                                          color: Colors.amberAccent,
-                                          size: 20,
+                                    Step(
+                                      state: int.parse(estado) >= 3
+                                          ? StepState.complete
+                                          : StepState.disabled,
+                                      isActive: int.parse(estado) >= 3,
+                                      title: const Text('En Camino'),
+                                      subtitle: Visibility(
+                                        visible: int.parse(estado) >= 3 ? true : false,
+                                        child: Text(
+                                            'Tu pedido salio a las ${DateFormat('HH:mm').format(pedido['fechaCamino'].toDate())} \n el ${DateFormat('d/M/y').format(pedido['fechaCamino'].toDate())}'),
+                                      ),
+                                      content: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Row(
+                                          children: [
+                                            CircleAvatar(
+                                              backgroundColor: Colors.white,
+                                              
+                                                
+                                                child: 
+                                                  Icon(
+                                                    getIcon(pedido['estadoid'].toString())
+                                                        .icon,
+                                                    color: Colors.deepOrange,
+                                                    size: 50,
+                                                  ),
+                                                
+                                              
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ),
-                                  ),
-                                  Step(
-                                    state: int.parse(estado) >= 3
-                                        ? StepState.complete
-                                        : StepState.disabled,
-                                    isActive: int.parse(estado) >= 3,
-                                    title: const Text('En Camino'),
-                                    subtitle: Visibility(
-                                      visible: int.parse(estado) >= 3 ? true : false,
-                                      child: Text(
-                                          'Tu pedido salio a las ${DateFormat('HH:mm').format(pedido['fechaCamino'].toDate())} \n el ${DateFormat('d/M/y').format(pedido['fechaCamino'].toDate())}'),
-                                    ),
-                                    content: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Row(
-                                        children: [
-                                          CircleAvatar(
-                                            backgroundColor: Colors.white,
-                                            
-                                              
-                                              child: 
-                                                Icon(
-                                                  getIcon(pedido['estadoid'].toString())
-                                                      .icon,
-                                                  color: Colors.deepOrange,
-                                                  size: 50,
-                                                ),
-                                              
-                                            
-                                          ),
-                                        ],
+                                    Step(
+                                      state: int.parse(estado) >= 4
+                                          ? StepState.complete
+                                          : StepState.disabled,
+                                      isActive: int.parse(estado) >= 4,
+                                      title: const Text('Entregado'),
+                                      subtitle: Visibility(
+                                        visible: int.parse(estado) >=4 ? true : false,
+                                        child: Text(
+                                            'Pedido entregado el ${DateFormat('d/M/y').format(pedido['fechaEntrega'].toDate())}\n alas ${DateFormat('HH:mm').format(pedido['fechaEntrega'].toDate())}'),
+                                      ),
+                                      content:const Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        
                                       ),
                                     ),
-                                  ),
-                                  Step(
-                                    state: int.parse(estado) >= 4
-                                        ? StepState.complete
-                                        : StepState.disabled,
-                                    isActive: int.parse(estado) >= 4,
-                                    title: const Text('Entregado'),
-                                    subtitle: Visibility(
-                                      visible: int.parse(estado) >=4 ? true : false,
-                                      child: Text(
-                                          'Pedido entregado el ${DateFormat('d/M/y').format(pedido['fechaEntrega'].toDate())}\n alas ${DateFormat('HH:mm').format(pedido['fechaEntrega'].toDate())}'),
-                                    ),
-                                    content:const Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      
-                                    ),
-                                  ),
+                                  ],
+                                ),
+                              );
+          
+                              // Oculta los iconos que no están en el estado actual.
+                            });
+          
+                            // Muestra el contenido del pedido.
+                            _texto1 +=
+                                (pedido['nombres'].toString());
+          
+          // Muestra la cantidad que tiene que pagar el cliente.
+                            _texto2 +=
+                                // ignore: unnecessary_string_escapes
+                                (pedido['precioTotal'].toString());
+                          }
+                        } else {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('Error'),
+                                content: const Text('El Pedido no existe'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text('OK'),
+                                  )
                                 ],
-                              ),
-                            );
-        
-                            // Oculta los iconos que no están en el estado actual.
-                          });
-        
-                          // Muestra el contenido del pedido.
-                          _texto1 +=
-                              ('Productos: \n${pedido['nombres'].toString()}');
-        
-        // Muestra la cantidad que tiene que pagar el cliente.
-                          _texto2 +=
-                              // ignore: unnecessary_string_escapes
-                              ('Cantidad a pagar: \Q${pedido['precioTotal'].toString()}');
+                              );
+                            },
+                          ); // Muestra un mensaje de error.
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('El pedido no existe'),
+                            ),
+                          );
                         }
                       } else {
                         showDialog(
@@ -258,7 +359,9 @@ onStepTapped(int value){
                           builder: (BuildContext context) {
                             return AlertDialog(
                               title: const Text('Error'),
-                              content: const Text('El Pedido no existe'),
+                              // ignore: prefer_const_constructors
+                              content: Text(
+                                  'El número de seguimiento no puede estar vacío'),
                               actions: [
                                 TextButton(
                                   onPressed: () {
@@ -269,118 +372,108 @@ onStepTapped(int value){
                               ],
                             );
                           },
-                        ); // Muestra un mensaje de error.
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('El pedido no existe'),
-                          ),
                         );
                       }
-                    } else {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: const Text('Error'),
-                            // ignore: prefer_const_constructors
-                            content: Text(
-                                'El número de seguimiento no puede estar vacío'),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text('OK'),
-                              )
-                            ],
-                          );
-                        },
-                      );
-                    }
-                  },
-                  child: const Text('Consultar'),
-                ),
-               ElevatedButton(
-          onPressed: () async {
-            if (_trackingNumber.isNotEmpty) {
-              String? token = await FirebaseMessaging.instance.getToken();
-              
-        FirebaseFirestore.instance.collection('tokens').doc(token).set({
-          'token': token,
-          'tema': 'pedido_$_trackingNumber',
-        });
-        FirebaseFirestore.instance.collection('pedidos').doc(_trackingNumber).update({
-          'idcliente': '${user!.email}',
+                    } : null,
+                    child: const Text('Consultar'),
+                  ),
+                 ElevatedButton(
+            onPressed: () async {
+              if (_trackingNumber.isNotEmpty) {
+                String? token = await FirebaseMessaging.instance.getToken();
+                
+          FirebaseFirestore.instance.collection('tokens').doc(token).set({
+            'token': token,
+            'tema': 'pedido_$_trackingNumber',
+          });
+          FirebaseFirestore.instance.collection('pedidos').doc(_trackingNumber).update({
+            'idcliente': '${user!.email}',
+            
+          });
+                // Registra el pedido para recibir notificaciones
+                await FirebaseMessaging.instance.subscribeToTopic('pedido_$_trackingNumber');
           
-        });
-              // Registra el pedido para recibir notificaciones
-              await FirebaseMessaging.instance.subscribeToTopic('pedido_$_trackingNumber');
-        
-              showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: const Text('Activado'),
-                            // ignore: prefer_const_constructors
-                            content: Text(
-                                'Te has suscrito a las notificaciones'),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text('OK'),
-                              )
-                            ],
-                          );
-                        },
-                      );
-            }else{
-              showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: const Text('Error'),
-                            // ignore: prefer_const_constructors
-                            content: Text(
-                                'El número de seguimiento no puede estar vacío'),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text('OK'),
-                              )
-                            ],
-                          );
-                        },
-                      );
-            }
-          },
-          child: const Text('Activar Notificaciones'),
-        ), 
-                Text(
-                  _texto1,
-                  style:
-                      const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.left,
-                ),
-                Text(
-                  _texto2,
-                  style:
-                      const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.left,
-                ),
-              ],
+                showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('Activado'),
+                              // ignore: prefer_const_constructors
+                              content: Text(
+                                  'Te has suscrito a las notificaciones'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text('OK'),
+                                )
+                              ],
+                            );
+                          },
+                        );
+              }else{
+                showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('Error'),
+                              // ignore: prefer_const_constructors
+                              content: Text(
+                                  'El número de seguimiento no puede estar vacío'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text('OK'),
+                                )
+                              ],
+                            );
+                          },
+                        );
+              }
+            },
+            child: const Text('Activar Notificaciones'),
+          ), 
+                 
+                ],
+              ),
             ),
           ),
+         
+        bottomNavigationBar: BottomAppBar(
+          height: 100.0,
+          notchMargin: 4.5,
+          shape: const CircularNotchedRectangle(),
+          child: Container(height: 20.0,
+          padding: const EdgeInsets.only(top: 20.0),
+            child: _texto1.isEmpty && _texto2.isEmpty
+      ? Text('Aquí aparecerá el detalle de tu pedido',
+        style: TextStyle(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.white
+              : Colors.black,
+          fontSize: 15,
+          fontWeight: FontWeight.bold,
         ),
+      )
+      : Text('Tus productos son: $_texto1 y el total a pagar es Q$_texto2',
+        style: TextStyle(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.white
+              : Colors.black,
+          fontSize: 15,
+          fontWeight: FontWeight.bold,
+        ),
+      ) 
       
-      bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        child: Container(height: 10.0),
+      
+      
+          ),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.startDocked,
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.startDocked,
     );
   }
 

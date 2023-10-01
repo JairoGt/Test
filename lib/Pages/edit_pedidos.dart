@@ -224,7 +224,7 @@ showLoadingDialog(BuildContext context) {
       
           // Crea un mapa con los datos actualizados
           final datosActualizados = {
-        'direccion': direccionActualizada,
+        'nombres': direccionActualizada,
         'precioTotal': precioTotalActualizado,
           };
       

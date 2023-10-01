@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:appseguimiento/Pages/MotoristaPage/moto_asignado.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -51,8 +52,39 @@ with SingleTickerProviderStateMixin {
   late User userLocal;
   final greeting = getGreeting();
   final user = FirebaseAuth.instance.currentUser;
+   // Lista de pedidos asignados
+  List<DocumentSnapshot> pedidosAsignados = [];
+  List<DocumentSnapshot> motoristas = [];
+  // ID del motorista
+  late String _idMotorista = '0';
+  final FirebaseAuth auth = FirebaseAuth.instance;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Obtener motoristas
+    motoristasRef.snapshots().listen((snapshot) {
+      motoristas = snapshot.docs;
+    });
+
+    // Obtener el ID del motorista
+    _idMotorista = auth.currentUser!.email.toString();
+
+    // Obtener pedidos asignados
+    pedidosRef
+        .where('idMotorista', isEqualTo: _idMotorista)
+        .where('estadoid', isNotEqualTo: 4)
+        .snapshots()
+        .listen((snapshot) {
+      pedidosAsignados = snapshot.docs;
+      setState(() {}); // Actualizar la interfaz de usuario
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final numPedidos = pedidosAsignados.length;
     return Scaffold(
    appBar: AppBar(
         title: Text(
@@ -102,12 +134,26 @@ with SingleTickerProviderStateMixin {
       ),
       body: WillPopScope(
          onWillPop: () async => false,
-        child: const Center(
-          child: Text('Para '),
-          
+           child:  Center(
+             child: Column(
+                     mainAxisAlignment: MainAxisAlignment.center,
+                     
+                  children: <Widget>[
+                    numPedidos == 0
+      ? Text('No tienes pedidos asignados', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),)
+      : Column(
+          children: [
+            Text('Tienes la cantidad de: ', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),),
+            Text('$numPedidos pedidos asignados', style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),),
+          ],
+        ),
+                  ],
+                     
+                   ),
+           )
           
         ),
-      ),
+      
       bottomNavigationBar: BottomAppBar(
         shape: const CircularNotchedRectangle(),
         child: Container(height: 50.0),
@@ -123,8 +169,10 @@ with SingleTickerProviderStateMixin {
                             ),
                           ),
                         );
+
+                        
         },
-        child: const Icon(Icons.assignment_sharp),
+        child: const Icon(Icons.motorcycle_sharp),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );

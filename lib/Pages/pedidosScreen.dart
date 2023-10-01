@@ -298,7 +298,6 @@ class _CrearPedidoScreenState extends State<CrearPedidoScreen>
       ),
     );
   }
-// En el método `_navegarAPedidosCreados`, limpiar la pantalla de los campos de generar pedido.
 
   void _navegarAPedidosCreados() {
     // Limpiar los campos de generar pedido.

@@ -68,6 +68,7 @@ void _onItemTapped(int index) async {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(
           greeting,
           style: const TextStyle(
