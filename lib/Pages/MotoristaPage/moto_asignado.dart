@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-// Importamos las bibliotecas necesarias
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 String getGreeting() {
@@ -47,6 +46,8 @@ class _MotoPageState extends State<MotoPage> {
   void initState() {
     super.initState();
 
+               
+              
     // Obtener motoristas
     motoristasRef.snapshots().listen((snapshot) {
       motoristas = snapshot.docs;
@@ -63,13 +64,13 @@ class _MotoPageState extends State<MotoPage> {
         .snapshots()
         .listen((snapshot) {
       pedidosAsignados = snapshot.docs;
-
+if (mounted) {
+                setState(() {});
+              }
       
     });
 
-    if (mounted) {
-                setState(() {});
-              }
+    
   }
 
   @override
@@ -156,6 +157,9 @@ class _MotoPageState extends State<MotoPage> {
                         ],
                       ),
                     ),
+                    onLongPress: () {
+                      
+                    },
                     onTap: () {
                       
                       showDialog(
@@ -195,26 +199,10 @@ class _MotoPageState extends State<MotoPage> {
                                           ),
                                         );
                                         Navigator.pop(context);
-//Navigator.popAndPushNamed(context, '/motoasignado');
+
                                       }
 
-                                      /*Navigator.of(context).pop();
-if(pedido['estadoid']==2){
-// Cambiar el estado del pedido a 'en camino'
-pedidosRef.doc(pedidosAsignados[index].id).update({
-'estadoid': 3,
-'fechaCamino': Timestamp.fromDate(now),
-});
-Navigator.popAndPushNamed(context, '/motoasignado');
-
-} else{
-ScaffoldMessenger.of(context).showSnackBar(
-const SnackBar(
-content: Text('El Pedido ya fue Marcado como EN Camino'),
-),
-);
-Navigator.popAndPushNamed(context, '/motoasignado');
-                  }*/
+                                      setState(() {});
                                     },
                                   ),
                                   ElevatedButton(
