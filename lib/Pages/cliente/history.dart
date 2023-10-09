@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,7 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:printing/printing.dart';
 import 'package:pdf/widgets.dart' as pw;
-
+ 
 
 class PedidosProvider {
   Future<List<DocumentSnapshot>> getPedidos(String email) async {
@@ -162,6 +161,7 @@ await Printing.sharePdf(bytes: bytes);
       },);
       } else {
         // Mostrar un cuadro de diálogo de error
+        // ignore: use_build_context_synchronously
         showDialog(
           context: context,
           builder: (context) {
@@ -182,6 +182,7 @@ await Printing.sharePdf(bytes: bytes);
       }
     } else {
       // Mostrar un cuadro de diálogo de error
+      // ignore: use_build_context_synchronously
       showDialog(
         context: context,
         builder: (context) {
@@ -213,7 +214,7 @@ await Printing.sharePdf(bytes: bytes);
           }, icon: const Icon(Icons.picture_as_pdf_outlined))
         ],
     
-        title: Text('Historial de pedidos',
+        title: const Text('Historial de pedidos',
             style: TextStyle(
                 color: Colors.grey, fontSize: 20, fontWeight: FontWeight.bold)),
       ),

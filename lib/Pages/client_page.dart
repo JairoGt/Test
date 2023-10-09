@@ -109,7 +109,7 @@ void _onItemTapped(int index) async {
           mainAxisAlignment: MainAxisAlignment.center,
           
           children: [
-          Text('Bienvenido ', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),),
+          const Text('Bienvenido ', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),),
           Text(
                   user!.displayName ?? '${user!.email}',
                   style: const TextStyle(fontSize: 15, color: Colors.grey),
@@ -131,7 +131,7 @@ void _onItemTapped(int index) async {
             ),
             
             ),
-            Text('Para hacere el seguimiento de tu pedido selecciona  SEGUIMIENTO', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),),
+            const Text('Para hacere el seguimiento de tu pedido selecciona  SEGUIMIENTO', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),),
           ],
         )
        ,

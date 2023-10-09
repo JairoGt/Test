@@ -1,23 +1,13 @@
-import 'dart:ui';
-
-import 'package:appseguimiento/Pages/MotoristaPage/moto_asignado.dart';
 import 'package:appseguimiento/Pages/admin_page.dart';
 import 'package:appseguimiento/Pages/asignacion_page.dart';
 import 'package:appseguimiento/Pages/client_page.dart';
-import 'package:appseguimiento/Pages/cliente/cliente2.dart';
-import 'package:appseguimiento/Pages/cliente/noti_api.dart';
-import 'package:appseguimiento/Pages/list_page.dart';
-import 'package:appseguimiento/auth/auth_page.dart';
-import 'package:appseguimiento/auth/login.dart';
-import 'package:appseguimiento/theme/app_theme.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-
-
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
+
+import 'exports.dart';
+
 
 void main()async {
+
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
   options: DefaultFirebaseOptions.currentPlatform,
@@ -67,8 +57,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      
       scaffoldMessengerKey: _scaffoldKey,
+      
       title: 'Flutter Demo',
+      
       theme: AppTheme(selectedColor: 7).theme(context),
       themeMode: ThemeMode.light,
       debugShowCheckedModeBanner: false,
@@ -83,6 +76,8 @@ class MyApp extends StatelessWidget {
        
       },
       home: const AuthPage(),
+      
+      
     );
   }
 }
